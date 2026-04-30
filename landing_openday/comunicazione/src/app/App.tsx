@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Header } from "./components/Header";
 import { HeroSection } from "./components/HeroSection";
 import { TextBlock } from "./components/TextBlock";
@@ -18,18 +19,20 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f4dbcc] overflow-x-hidden">
-      <Header onBookClick={scrollToForm} />
-      <main>
-        <HeroSection onBookClick={scrollToForm} />
-        <TextBlock onBookClick={scrollToForm} />
-        <CoppiaCreativaBlock onBookClick={scrollToForm} />
-        <CourseBlock onBookClick={scrollToForm} />
-        <CarouselBlock onBookClick={scrollToForm} />
-        <PlusBlock onBookClick={scrollToForm} />
-        <TestimonialBlock onBookClick={scrollToForm} />
-        <Footer />
-      </main>
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-[#f4dbcc] overflow-x-hidden">
+        <Header onBookClick={scrollToForm} />
+        <main>
+          <HeroSection onBookClick={scrollToForm} />
+          <TextBlock onBookClick={scrollToForm} />
+          <CoppiaCreativaBlock onBookClick={scrollToForm} />
+          <CourseBlock onBookClick={scrollToForm} />
+          <CarouselBlock onBookClick={scrollToForm} />
+          <PlusBlock onBookClick={scrollToForm} />
+          <TestimonialBlock onBookClick={scrollToForm} />
+          <Footer />
+        </main>
+      </div>
+    </ErrorBoundary>
   );
 }

@@ -11,6 +11,7 @@ import imgRectangle14 from "../../assets/carousel_image_9.jpg";
 import imgRectangle10 from "../../assets/carousel_image_10.jpg";
 import svgPaths from "../../imports/svg-ffe0txzxzn";
 import { CTAButton } from "./CTAButton";
+import { LazyImage } from "./LazyImage";
 
 const images = [
   imgRectangle11,
@@ -102,7 +103,7 @@ export function CarouselBlock({ onBookClick }: { onBookClick: () => void }) {
             key={i}
             className="shrink-0 w-[280px] md:w-[366px] h-[400px] md:h-[525px] rounded-lg overflow-hidden relative snap-start"
           >
-            <img
+            <LazyImage
               alt={`Esperienza studente ${i + 1}`}
               className="absolute inset-0 w-full h-full object-cover rounded-lg"
               src={img}

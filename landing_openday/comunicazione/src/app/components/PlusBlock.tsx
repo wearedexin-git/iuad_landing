@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { CTAButton } from "./CTAButton";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
@@ -42,15 +43,22 @@ const PHASE_CLS =
 
 export function PlusBlock({ onBookClick }: { onBookClick: () => void }) {
   const sectionRef   = useRef<HTMLDivElement>(null);
-  const targetRef    = useRef(0);    // progress "intenzionale" (aggiornato dagli eventi input)
-  const displayRef   = useRef(0);    // progress visuale (lerp verso target via RAF)
+  const targetRef    = useRef(0);
+  const displayRef   = useRef(0);
   const lockedRef    = useRef(false);
-  const pausedRef    = useRef(false); // true durante lo stop a p=1
+  const pausedRef    = useRef(false);
   const pauseTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rafRef       = useRef(0);
   const [p, setP]    = useState(0);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
+    // Se l'utente preferisce animazioni ridotte, mostra direttamente la fase finale
+    if (prefersReducedMotion) {
+      setP(1);
+      return;
+    }
+
     const el = sectionRef.current;
     if (!el) return;
 
@@ -221,7 +229,7 @@ export function PlusBlock({ onBookClick }: { onBookClick: () => void }) {
       window.removeEventListener("touchmove",  onTouchMove);
       unlock();
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   // ─── Calcolo animazioni ───────────────────────────────────────────────────
 

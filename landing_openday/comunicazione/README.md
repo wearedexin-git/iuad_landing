@@ -1,320 +1,291 @@
 # Landing Page - Design della Comunicazione | IUAD Milano
 
-Landing page per la campagna Open Day del corso triennale di Design della Comunicazione presso l'Accademia IUAD Milano.
-
-## 📋 Informazioni Evento
-
-- **Corso**: Design della Comunicazione (Triennale di I livello)
-- **Sede**: IUAD Milano - Via Balduccio da Pisa 16
-- **Data Open Day**: 16 maggio 2026, ore 11:00
-- **Cliente**: Accademia IUAD (Istituto Universitario di Architettura e Design)
+Landing page per l'Open Day del Corso Triennale in Design della Comunicazione presso IUAD Milano.
 
 ## 🚀 Quick Start
 
 ### Prerequisiti
-
-- **Node.js**: v18+ 
-- **npm** o **pnpm**
-- **PHP**: 7.4+ (per il backend di lead capture)
+- Node.js 18+ 
+- npm o pnpm
+- PHP 8.0+ (per il backend form)
 
 ### Installazione
 
 ```bash
 # Clona il repository
-git clone [url-repository]
-cd landing_comunicazione_b-main
+git clone [repository-url]
+cd landing_openday/comunicazione
 
-# Installa le dipendenze
+# Installa dipendenze
 npm install
 
-# Crea il file di ambiente dalle credenziali
+# Copia e configura .env
 cp .env.example .env
+# Modifica .env con i tuoi token API
 
-# ⚠️ IMPORTANTE: Modifica .env con i token JWT reali
-nano .env
+# Avvia dev server
+npm run dev
 ```
 
-### Configurazione File .env
+Il sito sarà disponibile su `http://localhost:5173`
 
-Apri il file `.env` e configura:
+## 📦 Comandi Disponibili
+
+```bash
+# Sviluppo
+npm run dev          # Avvia dev server con hot reload
+
+# Build
+npm run build        # Build production ottimizzata
+
+# Preview
+npm run preview      # Preview della build production locale
+
+# Analisi
+npm run build -- --mode analyze  # Analizza bundle size
+```
+
+## 🏗️ Struttura Progetto
+
+```
+comunicazione/
+├── src/
+│   ├── app/
+│   │   ├── components/         # Componenti React
+│   │   │   ├── ErrorBoundary.tsx
+│   │   │   ├── LazyImage.tsx
+│   │   │   ├── SkeletonLoaders.tsx
+│   │   │   ├── Header.tsx
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── CourseBlock.tsx
+│   │   │   └── ...
+│   │   ├── hooks/              # Custom React hooks
+│   │   │   └── usePrefersReducedMotion.ts
+│   │   ├── utils/              # Utility functions
+│   │   │   ├── validation.ts
+│   │   │   └── preload.ts
+│   │   └── App.tsx             # Root component
+│   ├── assets/                 # Immagini, video, fonts
+│   ├── styles/                 # CSS e Tailwind
+│   └── main.tsx                # Entry point
+├── public/
+│   ├── submit.php              # Backend form handler
+│   └── grazie.html             # Thank you page
+├── index.html
+├── vite.config.ts
+├── package.json
+├── .env.example
+├── OTTIMIZZAZIONI.md           # Documentazione ottimizzazioni
+└── RIEPILOGO_OTTIMIZZAZIONI.md # Riepilogo implementazioni
+```
+
+## 🎨 Tech Stack
+
+- **Framework**: React 18.3.1
+- **Build Tool**: Vite 6.3.5
+- **Styling**: Tailwind CSS 4.1.12
+- **UI Components**: Radix UI, Material-UI
+- **Animations**: Motion (Framer Motion fork)
+- **Language**: TypeScript
+- **Backend**: PHP 8.0+
+
+## 📋 Configurazione
+
+### Variabili d'Ambiente (.env)
 
 ```env
-# Ambiente: 'staging' o 'production'
-API_ENVIRONMENT=production
+# API Environment
+API_ENVIRONMENT=production          # o staging
+API_TOKEN_STAGING=your_token_here
+API_TOKEN_PRODUCTION=your_token_here
 
-# Token JWT per staging
-API_TOKEN_STAGING=your_staging_token_here
-
-# Token JWT per produzione
-API_TOKEN_PRODUCTION=your_production_token_here
-
-# Email
+# Email Configuration
 EMAIL_FROM=contact@accademiamoda.it
 EMAIL_FROM_NAME=Accademia IUAD
 EMAIL_TO_ACADEMY=ufficioculturale@accademiamoda.it
 ```
 
-### Sviluppo Locale
+### Backend PHP Setup
+
+Il form richiede un server PHP per funzionare. In locale puoi usare:
 
 ```bash
-# Avvia il server di sviluppo Vite
-npm run dev
+# MAMP/XAMPP
+# Configura il proxy in vite.config.ts sulla porta del tuo server
 
-# In un altro terminale, avvia PHP per gestire submit.php
-# Opzione 1: PHP built-in server
-cd public && php -S localhost:8888
-
-# Opzione 2: Usa MAMP/XAMPP/altro server locale
+# Oppure PHP built-in server
+cd public
+php -S localhost:8888
 ```
 
-La landing sarà disponibile su `http://localhost:5173/landing/design-della-comunicazione/`
+Il file `submit.php` gestisce:
+- Validazione dati
+- Chiamata API Eduarth CRM
+- Invio email conferma (utente + accademia)
+- Redirect a pagina grazie
 
-### Build per Produzione
+## ✨ Features Implementate
 
+### Performance
+- ⚡ Lazy loading immagini con IntersectionObserver
+- 📦 Code splitting intelligente (React, UI vendors separati)
+- 🗜️ Minification con Terser (console.log rimossi in prod)
+- 🚀 Preload pagina grazie on form interaction
+- 💾 Cache busting con hash nei filename
+
+### Accessibilità
+- ♿ Prefers-reduced-motion support
+- 🎯 ARIA labels corretti
+- ⌨️ Keyboard navigation
+- 📱 Mobile-first responsive
+
+### UX
+- 🛡️ Error Boundary per crash handling
+- 💀 Skeleton screens (video, immagini, cards)
+- ✅ Validazione form avanzata
+- 📊 Analytics tracking (Meta Pixel, GTM, Google Ads)
+- 🎬 Video player custom con mute toggle
+
+### SEO
+- 🔍 Meta tags completi (description, keywords, robots)
+- 📱 Open Graph per Facebook
+- 🐦 Twitter Cards
+- 🔗 Canonical URL
+- 🌍 Lang attribute (it)
+
+### Security
+- 🔒 Input sanitization (XSS protection)
+- 📧 Email validation (RFC-compliant)
+- 📞 Phone validation (formati italiani)
+- 🚫 CORS configurato
+- 🔐 Environment variables per token API
+
+## 🧪 Testing
+
+### Lighthouse Audit
 ```bash
-# Compila il progetto
+npx lighthouse http://localhost:5173 --view
+```
+
+**Target Scores**:
+- Performance: > 90
+- Accessibility: > 95
+- Best Practices: > 90
+- SEO: > 95
+
+### Cross-Browser Testing
+- Chrome/Edge ✅
+- Firefox ✅
+- Safari 14+ ✅
+- iOS Safari ✅
+- Mobile Chrome ✅
+
+### Form Testing
+1. Test validazione campi (email invalida, telefono invalido)
+2. Test submit con dati corretti
+3. Test error handling (server down)
+4. Test preload pagina grazie
+5. Test tracking analytics
+
+## 📱 Responsive Breakpoints
+
+```css
+/* Mobile */
+< 768px
+
+/* Tablet */
+768px - 1023px
+
+/* Desktop */
+≥ 1024px
+```
+
+Alcune animazioni (PlusBlock, TestimonialBlock) sono attive solo su desktop.
+
+## 🎯 Performance Metrics
+
+### Target Core Web Vitals
+- **LCP** (Largest Contentful Paint): < 2.5s
+- **FID** (First Input Delay): < 100ms
+- **CLS** (Cumulative Layout Shift): < 0.1
+
+### Bundle Size Target
+- Main bundle: ~300KB gzipped
+- Vendor bundles: ~200KB gzipped
+- Total: ~500KB gzipped
+
+## 🚢 Deploy
+
+### Build Production
+```bash
 npm run build
-
-# La cartella dist/ conterrà tutti i file pronti per il deploy
 ```
 
-## 📁 Struttura del Progetto
+La build verrà generata in `/dist`.
 
-```
-landing_comunicazione_b-main/
-├── src/
-│   ├── app/
-│   │   ├── App.tsx                    # Componente root
-│   │   └── components/
-│   │       ├── Header.tsx             # Header + CTA
-│   │       ├── HeroSection.tsx        # Hero + Form registrazione
-│   │       ├── TextBlock.tsx          # Blocco testo introduttivo
-│   │       ├── CoppiaCreativaBlock.tsx
-│   │       ├── CourseBlock.tsx        # Info sul corso
-│   │       ├── CarouselBlock.tsx      # Galleria progetti
-│   │       ├── PlusBlock.tsx
-│   │       ├── TestimonialBlock.tsx   # Testimonianze
-│   │       ├── Footer.tsx             # Footer con contatti
-│   │       ├── ui/                    # Componenti UI generici (template)
-│   │       └── figma/                 # Componenti da design
-│   ├── assets/                        # Immagini, font, SVG
-│   ├── styles/                        # CSS (Tailwind, fonts, theme)
-│   └── types/                         # TypeScript declarations
-├── public/
-│   ├── submit.php                     # Backend lead capture
-│   └── grazie.html                    # Thank you page
-├── .env                               # ⚠️ NON COMMITTARE (credenziali)
-├── .env.example                       # Template configurazione
-├── vite.config.ts                     # Configurazione Vite
-├── package.json
-└── README.md
-```
+### Hosting Requirements
+- Static hosting (Netlify, Vercel, AWS S3, ecc.)
+- PHP server per submit.php (se non usi serverless)
+- HTTPS obbligatorio per API calls
 
-## 🎨 Stack Tecnologico
-
-### Frontend
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite 6** - Build tool ultra-veloce
-- **Tailwind CSS 4** - Utility-first CSS
-- **Radix UI** - Componenti headless accessibili
-- **Embla Carousel** - Carosello progetti
-
-### Backend
-- **PHP** - API endpoint per lead capture
-- **Eduarth API** - Sistema CRM per lead management
-
-### Tracking & Analytics
-- Google Tag Manager
-- Meta Pixel (Facebook)
-- Google Ads Conversion
-- Iubenda (Cookie consent)
-
-## 🔐 Sicurezza
-
-### File Sensibili
-
-⚠️ **IMPORTANTE**: Il file `.env` contiene credenziali sensibili e **NON deve mai essere committato** nel repository.
-
-```bash
-# Verifica che .env sia nel .gitignore
-cat .gitignore | grep .env
-```
-
-### Token JWT
-
-I token JWT per l'API Eduarth sono configurati nel file `.env`:
-- **Staging Token**: Per sviluppo/test
-- **Production Token**: Per l'ambiente di produzione
-
-**Prima del deploy in produzione**, verifica:
-1. Che `API_ENVIRONMENT=production` nel file `.env`
-2. Che i token siano aggiornati e validi
-3. Che le email siano configurate correttamente
-
-## 🌐 Deploy
-
-### Requisiti Server
-
-- **Web Server**: Apache/Nginx con supporto per SPA
-- **PHP**: 7.4+ con estensioni `curl`, `json`, `mbstring`
-- **HTTPS**: Obbligatorio per privacy e sicurezza
-
-### Path di Deploy
-
-Il progetto è configurato per essere servito su:
-
-```
-https://tuodominio.it/landing/design-della-comunicazione/
-```
-
-Se vuoi cambiare il path, modifica `base` in `vite.config.ts`:
-
-```typescript
-export default defineConfig({
-  base: '/tuo-nuovo-path/',
-  // ...
-});
-```
-
-### Procedura Deploy
-
-1. **Build del progetto**:
-   ```bash
-   npm run build
-   ```
-
-2. **Carica su server**:
-   ```bash
-   # Carica tutto il contenuto di dist/ nella directory web
-   rsync -avz dist/ user@server:/path/to/landing/design-della-comunicazione/
-   ```
-
-3. **Configura file .env sul server**:
-   ```bash
-   # Sul server, crea .env nella root del progetto (un livello sopra public/)
-   nano /path/to/landing/.env
-   ```
-
-4. **Configura web server** per servire `index.html` come fallback per le route SPA
-
-5. **Verifica funzionamento**:
-   - Apri la landing nel browser
-   - Testa il form di registrazione
-   - Verifica che arrivi l'email di conferma
-   - Controlla che i lead arrivino in Eduarth
-
-## 📊 Lead Capture Flow
-
-```
-User compila form
-     ↓
-HeroSection invia POST a submit.php
-     ↓
-submit.php valida i dati
-     ↓
-submit.php chiama API Eduarth
-     ↓
-submit.php invia 2 email:
-  - Conferma all'utente
-  - Notifica all'accademia
-     ↓
-Redirect a grazie.html
-```
-
-### Campi Form
-
-- `first_name` - Nome
-- `last_name` - Cognome
-- `email` - Email
-- `phone_number` - Numero di telefono
-- `how_you_knows` - Come ci ha conosciuto (1-7)
-
-### API Endpoint
-
-- **Staging**: `https://staging-eduarth.accademiamoda.it/api/leads/steps/create`
-- **Production**: `https://eduarth.accademiamoda.it/api/leads/steps/create`
-
-## 🎯 Ottimizzazioni Implementate
-
-### ✅ Sicurezza
-- Token JWT spostati da codice a variabili d'ambiente
-- File `.env` escluso da git
-- Validazione input lato server
-
-### ✅ Codice
-- Rimosso codice legacy (`LandingDesktop.tsx`, `.history/`)
-- Rinominato `FormBlock` → `Footer` per chiarezza semantica
-- Documentazione dipendenze (`DEPENDENCIES.md`)
-
-### ✅ Asset
-- Tutte le immagini presenti e verificate
-- Documentazione asset con suggerimenti di ottimizzazione (`ASSETS.md`)
-
-### 🔄 Da Valutare (Opzionale)
-- Pulizia dipendenze non utilizzate dal template UI
-- Ottimizzazione dimensione immagini (alcune > 1MB)
-- Implementazione lazy loading per immagini
-- Conversione immagini a WebP/AVIF
+### Checklist Pre-Deploy
+- [ ] File `.env` configurato correttamente
+- [ ] Build production senza errori
+- [ ] Test form submission su staging
+- [ ] Verificato tracking analytics
+- [ ] Meta tags Open Graph testati
+- [ ] Lighthouse audit passato
+- [ ] Cross-browser testing completato
+- [ ] Asset compressi (immagini WebP, video ottimizzato)
 
 ## 🐛 Troubleshooting
 
 ### Form non funziona
+- Verifica che il server PHP sia avviato
+- Controlla il proxy in `vite.config.ts`
+- Verifica i token API in `.env`
+- Controlla console browser per errori
 
-1. Verifica che PHP sia in esecuzione:
-   ```bash
-   curl http://localhost:8888/submit.php
-   ```
+### Immagini non caricano
+- Verifica path in import
+- Controlla che gli asset siano in `src/assets/`
+- Build e riavvia dev server
 
-2. Controlla il file `.env` sia configurato correttamente
-
-3. Verifica i log PHP per errori:
-   ```bash
-   tail -f /var/log/php/error.log
-   ```
+### Video non parte
+- Verifica path video in `CourseBlock.tsx`
+- Su iOS, autoplay funziona solo se muted
+- Controlla formato video (MP4 H.264)
 
 ### Build fallisce
+- Verifica versione Node.js (18+)
+- Cancella `node_modules` e reinstalla
+- Verifica TypeScript errors
+- Controlla import paths
 
-1. Verifica che tutte le immagini siano presenti:
-   ```bash
-   ls -l src/assets/*.jpg
-   ```
+## 📚 Documentazione
 
-2. Pulisci la cache e riprova:
-   ```bash
-   rm -rf node_modules dist
-   npm install
-   npm run build
-   ```
+- [OTTIMIZZAZIONI.md](./OTTIMIZZAZIONI.md) - Dettagli tutte le ottimizzazioni
+- [RIEPILOGO_OTTIMIZZAZIONI.md](./RIEPILOGO_OTTIMIZZAZIONI.md) - Summary ottimizzazioni
+- [.env.example](./.env.example) - Template variabili ambiente
 
-### Email non arrivano
+## 🤝 Contributing
 
-1. Verifica configurazione email in `.env`
-2. Controlla che il server PHP abbia configurato correttamente la funzione `mail()`
-3. Verifica log email del server
+1. Crea un branch feature (`git checkout -b feature/nome-feature`)
+2. Commit changes (`git commit -m 'Add: descrizione'`)
+3. Push al branch (`git push origin feature/nome-feature`)
+4. Apri Pull Request
 
-## 📚 Documentazione Aggiuntiva
+## 📄 License
 
-- [`DEPENDENCIES.md`](./DEPENDENCIES.md) - Analisi dettagliata delle dipendenze
-- [`ASSETS.md`](./ASSETS.md) - Inventario e ottimizzazione asset
-- [`.env.example`](./.env.example) - Template configurazione ambiente
+© 2026 IUAD Accademia di Moda e Design. Tutti i diritti riservati.
 
-## 🤝 Supporto
+## 📧 Contatti
 
-Per domande o supporto:
 - **Email**: info@accademiamoda.it
 - **Telefono**: +39 081 554 0383
-- **Sede IUAD Milano**: Via Balduccio da Pisa 16, Milano
-
-## 📝 Note di Versione
-
-### v0.0.1 - Versione Corrente
-- Landing page completa con tutti i componenti
-- Sistema di lead capture integrato con Eduarth
-- Tracking analytics configurato
-- Ottimizzazioni sicurezza e codice implementate
+- **Sede**: Via Balduccio da Pisa 16, Milano
 
 ---
 
-**Sviluppato per**: Accademia IUAD Milano  
-**Corso**: Design della Comunicazione - Open Day 2026
+**Ultima modifica**: 30 Aprile 2026  
+**Versione**: 1.0.0

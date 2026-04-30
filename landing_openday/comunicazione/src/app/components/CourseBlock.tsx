@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
 import { CTAButton } from "./CTAButton";
+import { VideoSkeleton } from "./SkeletonLoaders";
 
 function VideoPlayer() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -12,9 +14,18 @@ function VideoPlayer() {
     }
   };
 
+  const handleLoadedData = () => {
+    setIsLoading(false);
+  };
+
   return (
     <div className="relative w-full max-w-[440px] xl:w-[440px] shrink-0">
       <div className="relative rounded-[12px] overflow-hidden border-2 border-[#d06321] aspect-[9/16] bg-[#201f1f]">
+        {isLoading && (
+          <div className="absolute inset-0 z-10">
+            <VideoSkeleton />
+          </div>
+        )}
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover"
@@ -23,30 +34,33 @@ function VideoPlayer() {
           loop
           playsInline
           preload="metadata"
+          onLoadedData={handleLoadedData}
         >
           <source src={`${import.meta.env.BASE_URL}assets/video/video_couse.mp4`} type="video/mp4" />
         </video>
 
         {/* Bottone mute/unmute */}
-        <button
-          onClick={toggleMute}
-          aria-label={isMuted ? "Attiva audio" : "Disattiva audio"}
-          className="absolute bottom-4 right-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 transition-colors cursor-pointer"
-        >
-          {isMuted ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <line x1="23" y1="9" x2="17" y2="15" />
-              <line x1="17" y1="9" x2="23" y2="15" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-            </svg>
-          )}
-        </button>
+        {!isLoading && (
+          <button
+            onClick={toggleMute}
+            aria-label={isMuted ? "Attiva audio" : "Disattiva audio"}
+            className="absolute bottom-4 right-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 transition-colors cursor-pointer"
+          >
+            {isMuted ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );

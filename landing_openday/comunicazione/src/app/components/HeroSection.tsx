@@ -1,6 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EyeIcon } from "./EyeIcon";
 import svgPaths from "../../imports/svg-ffe0txzxzn";
+import { 
+  isValidEmail, 
+  isValidItalianPhone, 
+  sanitizeInput, 
+  getValidationError 
+} from "../utils/validation";
+import { preloadThankYouPage, trackFormEvent } from "../utils/preload";
 
 function ArrowDownIcon() {
   return (
@@ -56,15 +63,68 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
   const [privacy, setPrivacy] = useState(false);
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  // Preload pagina di ringraziamento quando l'utente inizia a compilare
+  useEffect(() => {
+    if (hasInteracted) {
+      preloadThankYouPage();
+      trackFormEvent('FormStarted');
+    }
+  }, [hasInteracted]);
+
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Reset errori
+    setErrorMsg("");
+    
+    // Validazione privacy
     if (!privacy) {
       setErrorMsg("Devi accettare l'informativa sulla privacy per procedere.");
       return;
     }
-    setErrorMsg("");
+
+    // Validazione campi con messaggi dettagliati
+    const nomeError = getValidationError('nome', formData.nome);
+    if (nomeError) {
+      setErrorMsg(nomeError);
+      return;
+    }
+
+    const cognomeError = getValidationError('cognome', formData.cognome);
+    if (cognomeError) {
+      setErrorMsg(cognomeError);
+      return;
+    }
+
+    const emailError = getValidationError('email', formData.email);
+    if (emailError) {
+      setErrorMsg(emailError);
+      return;
+    }
+
+    const telefonoError = getValidationError('telefono', formData.telefono);
+    if (telefonoError) {
+      setErrorMsg(telefonoError);
+      return;
+    }
+
+    // Verifica che sia selezionata un'opzione valida per "come ci hai conosciuto"
+    if (!formData.comeConosciuto || formData.comeConosciuto === "") {
+      setErrorMsg("Seleziona come ci hai conosciuto.");
+      return;
+    }
+
     setStatus("loading");
+    trackFormEvent('FormSubmitted');
 
     const base = import.meta.env.BASE_URL;
     try {
@@ -72,10 +132,10 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          first_name:    formData.nome,
-          last_name:     formData.cognome,
-          email:         formData.email,
-          phone_number:  formData.telefono,
+          first_name:    sanitizeInput(formData.nome),
+          last_name:     sanitizeInput(formData.cognome),
+          email:         sanitizeInput(formData.email),
+          phone_number:  sanitizeInput(formData.telefono),
           how_you_knows: formData.comeConosciuto,
         }),
       });
@@ -83,13 +143,16 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
       const data = await res.json();
 
       if (data.success) {
+        trackFormEvent('FormSuccess');
         const redirectPath = (data.redirect ?? "grazie.html").replace(/^\//, "");
         window.location.href = base + redirectPath;
       } else {
+        trackFormEvent('FormError', { error: data.message });
         setStatus("error");
         setErrorMsg(data.message ?? "Si è verificato un errore. Riprova.");
       }
     } catch (err) {
+      trackFormEvent('FormError', { error: 'Network error' });
       setStatus("error");
       if (err instanceof SyntaxError) {
         setErrorMsg("Risposta non valida dal server. Controlla i log PHP e riprova.");
@@ -172,7 +235,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     type="text"
                     placeholder="Nome"
                     value={formData.nome}
-                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    onChange={(e) => handleInputChange('nome', e.target.value)}
                     className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
@@ -185,7 +248,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     type="text"
                     placeholder="Cognome"
                     value={formData.cognome}
-                    onChange={(e) => setFormData({ ...formData, cognome: e.target.value })}
+                    onChange={(e) => handleInputChange('cognome', e.target.value)}
                     className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
@@ -202,7 +265,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     type="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
@@ -215,7 +278,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     type="tel"
                     placeholder="Telefono"
                     value={formData.telefono}
-                    onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                    onChange={(e) => handleInputChange('telefono', e.target.value)}
                     className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
@@ -230,7 +293,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                 <div className="relative">
                   <select
                     value={formData.comeConosciuto}
-                    onChange={(e) => setFormData({ ...formData, comeConosciuto: e.target.value })}
+                    onChange={(e) => handleInputChange('comeConosciuto', e.target.value)}
                     className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10"
                     required
                   >

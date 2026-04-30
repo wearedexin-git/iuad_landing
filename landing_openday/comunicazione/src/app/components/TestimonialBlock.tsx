@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import svgPaths from "../../imports/svg-ffe0txzxzn";
 import { CTAButton } from "./CTAButton";
 import { EyeIcon } from "./EyeIcon";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
@@ -107,6 +108,7 @@ export function TestimonialBlock({ onBookClick }: { onBookClick: () => void }) {
   const rafRef          = useRef(0);
   const [p, setP]       = useState(0);
   const [titleVisible, setTitleVisible] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   // Aggiorna isDesktop al resize
   useEffect(() => {
@@ -140,6 +142,12 @@ export function TestimonialBlock({ onBookClick }: { onBookClick: () => void }) {
       document.documentElement.style.overflow = "";
       document.body.style.overflow             = "";
       lockedRef.current = false;
+      return;
+    }
+
+    // Se l'utente preferisce animazioni ridotte, mostra direttamente lo stato finale
+    if (prefersReducedMotion) {
+      setP(1);
       return;
     }
 
@@ -274,7 +282,7 @@ export function TestimonialBlock({ onBookClick }: { onBookClick: () => void }) {
       window.removeEventListener("touchmove",  onTouchMove);
       unlock();
     };
-  }, [isDesktop]);
+  }, [isDesktop, prefersReducedMotion]);
 
   // ─── Render mobile/tablet (< 1024px) ─────────────────────────────────────────
 

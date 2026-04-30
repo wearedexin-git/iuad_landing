@@ -1,6 +1,7 @@
 import imgCourseImage from "../../assets/course_image.jpg";
 import { CTAButton } from "./CTAButton";
 import { EyeIcon } from "./EyeIcon";
+import { LazyImage } from "./LazyImage";
 
 export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }) {
   return (
@@ -10,7 +11,7 @@ export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }
         <div className="relative w-full max-w-[362px] xl:w-[362px] shrink-0">
           <div className="rotate-[-4.54deg]">
             <div className="relative rounded-[12px] overflow-hidden border-2 border-[#d06321] aspect-[362/519]">
-              <img
+              <LazyImage
                 alt="Studenti al lavoro"
                 className="absolute inset-0 w-full h-full object-cover"
                 src={imgCourseImage}
