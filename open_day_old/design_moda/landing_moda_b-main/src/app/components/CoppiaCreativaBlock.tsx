@@ -1,0 +1,44 @@
+import imgCourseImage from "../../assets/course_image.jpg";
+import { CTAButton } from "./CTAButton";
+import { FashionIcon } from "./FashionIcon";
+
+export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }) {
+  return (
+    <section className="relative bg-[#D6E2F0] py-16 md:py-24 overflow-hidden">
+      <div className="flex flex-col xl:flex-row items-center gap-12 xl:gap-16 px-5 md:px-10 justify-center xl:px-[calc(8.33%+35px)]">
+        {/* Image */}
+        <div className="relative w-full max-w-[362px] xl:w-[362px] shrink-0">
+          <div className="rotate-[-4.54deg]">
+            <div className="relative rounded-[12px] overflow-hidden border-2 border-[#8D9EBD] aspect-[362/519]">
+              <img
+                alt="Studenti al lavoro"
+                className="absolute inset-0 w-full h-full object-cover"
+                src={imgCourseImage}
+              />
+            </div>
+          </div>
+          {/* SVG decorativa — in basso a sinistra sopra l'immagine, non ruotata */}
+          <div className="absolute bottom-[-80px] md:bottom-[-100px] xl:bottom-[-120px] left-0 z-10">
+            <FashionIcon variant="medium" className="w-[73px] h-[140px] md:w-[98px] md:h-[190px] xl:w-[122px] xl:h-[237px]" />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
+          <div className="flex flex-col gap-6">
+            <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#8D9EBD] leading-[1.1]">
+              Non solo design
+            </h2>
+            <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
+              Scegliere il corso Triennale in{" "}
+              <span className="font-bold">Design della Moda</span> significa acquisire competenze che vanno ben oltre la semplice collezione. Imparerai a padroneggiare le skill tecniche e la conoscenza dei materiali, diventando un professionista capace di{" "}
+              <span className="font-bold">organizzare il processo produttivo del capo</span>, seguendo ogni fase fondamentale: dal disegno iniziale fino alla vendita.
+            </p>
+          </div>
+          <CTAButton onClick={onBookClick} className="self-start" />
+        </div>
+      </div>
+
+    </section>
+  );
+}

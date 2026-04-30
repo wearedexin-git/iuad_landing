@@ -1,0 +1,52 @@
+# Dipendenze
+node_modules/
+
+# Build output
+dist/
+build/
+
+# File di ambiente - IMPORTANTE: Non committare mai file con credenziali!
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+*.env
+!.env.example
+
+# Log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor e IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+.parcel-cache/
+.vite/
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+# File storici e legacy
+.history/
+
+# Backup e file temporanei dell'editor
+*~
+*.bak
+*.backup
