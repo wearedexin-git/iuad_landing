@@ -81,10 +81,18 @@ npm run build
 - `3xxxxxxxxx` (auto-formattato)
 - `0039 3xx xxx xxxx`
 
+## 📍 Open Day multi-sede (config condivisa)
+
+- **File**: `src/app/config/openday-config.json` — sedi, indirizzi, sessioni (`apiDateTime`), testi footer, `course` / `origin` / `requestDescription` per l’API.
+- **Frontend**: `HeroSection` (hero + form: sede, data sulla stessa riga, placeholder guidati), `Footer` (contatti da `footer.contacts`).
+- **Backend**: `public/submit.php` rilegge lo stesso JSON per validare `location` e `open_day_date` prima della chiamata Eduarth; email e redirect verso `grazie.html` con query `sede` e `data`.
+- **Tracking**: eventi form e conversione ringraziamento arricchiti con sede e data ove supportato (vedi `preload.ts` e `grazie.html`).
+- **Deploy**: il PHP deve poter leggere il file JSON (vedi README, sezione hosting).
+
 ## 🔍 SEO & Discoverability
 
 ### 1. Meta Tags Completi (index.html)
-- Description e keywords ottimizzati
+- Description e keywords ottimizzati (corso unico, Open Day Milano e Napoli)
 - Open Graph per Facebook
 - Twitter Cards
 - Canonical URL
@@ -131,6 +139,9 @@ npm run build -- --mode analyze
 - `.env.example` fornito per template
 - Token API non committati
 - CORS configurato correttamente
+
+### 3. Whitelist lato server (submit.php)
+- `location` e `open_day_date` inviati dal browser devono coincidere con i valori ammessi in `openday-config.json`, riducendo il rischio di payload manipolati.
 
 **Setup .env**:
 ```bash

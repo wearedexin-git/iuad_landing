@@ -25,8 +25,69 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = json_decode(file_get_contents('php://input'), true);
 
+function loadJsonConfig(string $path): array
+{
+    if (!file_exists($path)) {
+        return [];
+    }
+
+    $content = file_get_contents($path);
+    if ($content === false) {
+        return [];
+    }
+
+    $decoded = json_decode($content, true);
+    return is_array($decoded) ? $decoded : [];
+}
+
+function formatOpenDayDateLabel(string $openDayDate): string
+{
+    $date = DateTime::createFromFormat('Y-m-d H:i', $openDayDate);
+    if ($date === false) {
+        return $openDayDate;
+    }
+
+    $months = [
+        1 => 'gennaio', 2 => 'febbraio', 3 => 'marzo', 4 => 'aprile',
+        5 => 'maggio', 6 => 'giugno', 7 => 'luglio', 8 => 'agosto',
+        9 => 'settembre', 10 => 'ottobre', 11 => 'novembre', 12 => 'dicembre',
+    ];
+    $month = $months[(int) $date->format('n')] ?? '';
+
+    return sprintf(
+        '%d %s %s, ore %s',
+        (int) $date->format('j'),
+        $month,
+        $date->format('Y'),
+        $date->format('H:i')
+    );
+}
+
+// ── Config landing condivisa frontend/backend ──────────────────────────────
+$landingConfigPath = __DIR__ . '/../src/app/config/openday-config.json';
+$landingConfig = loadJsonConfig($landingConfigPath);
+$campuses = $landingConfig['campuses'] ?? [];
+
+$campusesByApiValue = [];
+$sessionsByCampusApiValue = [];
+foreach ($campuses as $campus) {
+    $apiValue = trim((string) ($campus['apiValue'] ?? ''));
+    if ($apiValue === '') {
+        continue;
+    }
+
+    $campusesByApiValue[$apiValue] = $campus;
+    $sessionsByCampusApiValue[$apiValue] = [];
+    foreach (($campus['sessions'] ?? []) as $session) {
+        $apiDateTime = trim((string) ($session['apiDateTime'] ?? ''));
+        if ($apiDateTime !== '') {
+            $sessionsByCampusApiValue[$apiValue][] = $apiDateTime;
+        }
+    }
+}
+
 // ── Validazione campi obbligatori ──────────────────────────────────────────
-$required = ['first_name', 'last_name', 'email', 'phone_number', 'how_you_knows'];
+$required = ['first_name', 'last_name', 'email', 'phone_number', 'how_you_knows', 'location', 'open_day_date'];
 foreach ($required as $field) {
     if (empty($input[$field])) {
         ob_end_clean();
@@ -36,18 +97,44 @@ foreach ($required as $field) {
     }
 }
 
+$selectedLocation = trim((string) $input['location']);
+$selectedOpenDayDate = trim((string) $input['open_day_date']);
+
+if (!isset($campusesByApiValue[$selectedLocation])) {
+    ob_end_clean();
+    http_response_code(422);
+    echo json_encode(['success' => false, 'message' => 'Sede non valida.']);
+    exit();
+}
+
+if (!in_array($selectedOpenDayDate, $sessionsByCampusApiValue[$selectedLocation], true)) {
+    ob_end_clean();
+    http_response_code(422);
+    echo json_encode(['success' => false, 'message' => 'Data Open Day non valida per la sede selezionata.']);
+    exit();
+}
+
+$selectedCampusConfig = $campusesByApiValue[$selectedLocation];
+$selectedCampusLabel = (string) ($selectedCampusConfig['label'] ?? $selectedLocation);
+$selectedCampusAddress = (string) ($selectedCampusConfig['address'] ?? '');
+$selectedOpenDayDateLabel = formatOpenDayDateLabel($selectedOpenDayDate);
+$selectedCampusLabelEscaped = htmlspecialchars($selectedCampusLabel);
+$selectedCampusAddressEscaped = htmlspecialchars($selectedCampusAddress);
+$selectedOpenDayDateLabelEscaped = htmlspecialchars($selectedOpenDayDateLabel);
+
 // ── Payload API ────────────────────────────────────────────────────────────
 $data = [
-    'location'            => 'Milano',
-    'request_description' => 'Richiesta da Landing',
+    'location'            => $selectedLocation,
+    'request_description' => (string) ($landingConfig['requestDescription'] ?? 'Richiesta da Landing'),
     'first_name'          => trim($input['first_name']),
     'last_name'           => trim($input['last_name']),
     'email'               => trim($input['email']),
     'phone_number'        => trim($input['phone_number']),
     'lang'                => 'it',
-    'course'              => ['corso triennale di I livello in design della comunicazione'],
-    'origin'              => ['website', 'landing', 'openday'],
+    'course'              => $landingConfig['course'] ?? ['corso triennale di i livello in design della comunicazione'],
+    'origin'              => $landingConfig['origin'] ?? ['website', 'landing', 'openday'],
     'how_you_knows'       => (int) $input['how_you_knows'],
+    'open_day_date'       => $selectedOpenDayDate,
 ];
 
 // ── Caricamento configurazione da .env ─────────────────────────────────────
@@ -227,7 +314,19 @@ $userBody = "
                     <tr>
                       <td style='padding-bottom:10px;font-family:Arial,sans-serif;font-size:14px;'>
                         <strong style='color:#d06321;'>Sede:</strong>
-                        <span style='color:#201f1f;'> Milano</span>
+                        <span style='color:#201f1f;'> $selectedCampusLabelEscaped</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style='padding-bottom:10px;font-family:Arial,sans-serif;font-size:14px;'>
+                        <strong style='color:#d06321;'>Data Open Day:</strong>
+                        <span style='color:#201f1f;'> $selectedOpenDayDateLabelEscaped</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style='padding-bottom:10px;font-family:Arial,sans-serif;font-size:14px;'>
+                        <strong style='color:#d06321;'>Indirizzo sede:</strong>
+                        <span style='color:#201f1f;'> $selectedCampusAddressEscaped</span>
                       </td>
                     </tr>
                     <tr>
@@ -309,7 +408,9 @@ $academyBody = "
               <tr>
                 <td style='padding-top:16px;font-size:14px;color:#201f1f;font-family:Arial,sans-serif;line-height:1.5;'>
                   <p style='margin:0 0 8px;'><strong>Tipo Richiesta:</strong> Open Day</p>
-                  <p style='margin:0 0 8px;'><strong>Sede:</strong> Milano</p>
+                  <p style='margin:0 0 8px;'><strong>Sede:</strong> $selectedCampusLabelEscaped</p>
+                  <p style='margin:0 0 8px;'><strong>Data Open Day:</strong> $selectedOpenDayDateLabelEscaped</p>
+                  <p style='margin:0 0 8px;'><strong>Indirizzo sede:</strong> $selectedCampusAddressEscaped</p>
                   <p style='margin:0 0 8px;'><strong>Corso:</strong> Design della Comunicazione</p>
                   <p style='margin:0;'><strong>Come ci hai conosciuto:</strong> $howYouKnowsLabel</p>
                 </td>
@@ -338,9 +439,14 @@ sendHtmlMail($emailToAcademy, $academySubject, $academyBody, $emailFrom, $emailF
 
 // ── Risposta al frontend ───────────────────────────────────────────────────
 ob_end_clean();
+$redirectQuery = http_build_query([
+    'sede' => $selectedCampusLabel,
+    'data' => $selectedOpenDayDateLabel,
+]);
+
 echo json_encode([
     'success'       => true,
     'leads_created' => $responseData['leads_created'] ?? 0,
     'leads_updated' => $responseData['leads_updated'] ?? 0,
-    'redirect'      => 'grazie.html',
+    'redirect'      => 'grazie.html?' . $redirectQuery,
 ]);

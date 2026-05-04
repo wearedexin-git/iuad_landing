@@ -16,18 +16,23 @@
 7. **`.env.example`** - Template variabili d'ambiente
 8. **`.gitignore`** - Git ignore ottimizzato
 9. **`OTTIMIZZAZIONI.md`** - Documentazione completa
+10. **`src/app/config/openday-config.json`** - Sedi, date Open Day, footer e metadati API condivisi con `submit.php`
 
 ### 🔧 File Modificati
 
 1. **`App.tsx`** - Aggiunto ErrorBoundary wrapper
-2. **`HeroSection.tsx`** - Validazione avanzata + preload + tracking
-3. **`CarouselBlock.tsx`** - Lazy loading immagini carousel
-4. **`CoppiaCreativaBlock.tsx`** - Lazy loading immagine principale
-5. **`CourseBlock.tsx`** - Skeleton loading video
-6. **`PlusBlock.tsx`** - Supporto prefers-reduced-motion
-7. **`TestimonialBlock.tsx`** - Supporto prefers-reduced-motion
-8. **`index.html`** - Meta tag SEO completi (Open Graph, Twitter Cards)
-9. **`vite.config.ts`** - Ottimizzazioni build (code splitting, minification)
+2. **`HeroSection.tsx`** - Validazione avanzata, preload, tracking con sede/data, form Open Day multi-sede (sede + data)
+3. **`Footer.tsx`** - Contatti da `openday-config.json` (Milano / Napoli configurabili)
+4. **`CarouselBlock.tsx`** - Lazy loading immagini carousel
+5. **`CoppiaCreativaBlock.tsx`** - Lazy loading immagine principale
+6. **`CourseBlock.tsx`** - Skeleton loading video
+7. **`PlusBlock.tsx`** - Supporto prefers-reduced-motion
+8. **`TestimonialBlock.tsx`** - Supporto prefers-reduced-motion
+9. **`index.html`** - Meta tag SEO (Open Day Milano e Napoli, Open Graph, Twitter Cards)
+10. **`public/submit.php`** - Whitelist da config, `open_day_date`, email con sede/data/indirizzo, redirect con query string
+11. **`public/grazie.html`** - Riepilogo sede/data da URL, conversioni con parametri personalizzati
+12. **`README.md`** - Documentazione operativa aggiornata
+13. **`vite.config.ts`** - Ottimizzazioni build (code splitting, minification)
 
 ---
 
@@ -52,7 +57,7 @@
 - ✅ **Skeleton Screens**: Feedback visivo durante caricamento
 - ✅ **Form Validation**: Messaggi di errore specifici e utili
 - ✅ **Loading States**: Stati chiari (idle, loading, error)
-- ✅ **Analytics Tracking**: Eventi form tracciati automaticamente
+- ✅ **Analytics Tracking**: Eventi form tracciati automaticamente (con parametri sede/data dove applicabile)
 
 ### 4. SEO & Discoverability 🔍
 - ✅ **Meta Tags**: Description, keywords, robots

@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { EyeIcon } from "./EyeIcon";
 import svgPaths from "../../imports/svg-ffe0txzxzn";
 import { 
-  isValidEmail, 
-  isValidItalianPhone, 
   sanitizeInput, 
   getValidationError 
 } from "../utils/validation";
 import { preloadThankYouPage, trackFormEvent } from "../utils/preload";
+import openDayConfig from "../config/openday-config.json";
 
 function ArrowDownIcon() {
   return (
@@ -52,18 +51,79 @@ const HOW_YOU_KNOWS_OPTIONS = [
 
 type FormStatus = "idle" | "loading" | "error";
 
-export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => void }) {
-  const [formData, setFormData] = useState({
+type Session = {
+  id: string;
+  apiDateTime: string;
+};
+
+type Campus = {
+  id: string;
+  label: string;
+  apiValue: string;
+  address: string;
+  sessions?: Session[];
+};
+
+/** Solo sedi con almeno una data Open Day (sessions valorizzato e non vuoto) */
+const CAMPUSES = (openDayConfig.campuses as Campus[]).filter(
+  (campus) => Array.isArray(campus.sessions) && campus.sessions.length > 0,
+);
+
+const IS_SINGLE_CAMPUS = CAMPUSES.length === 1;
+const SINGLE_CAMPUS = IS_SINGLE_CAMPUS ? CAMPUSES[0] : undefined;
+const SINGLE_CAMPUS_SESSIONS = SINGLE_CAMPUS?.sessions ?? [];
+/** Una sede e più date: serve solo il select data (niente select sede) */
+const SHOW_DATE_ONLY_FOR_SINGLE_CAMPUS =
+  IS_SINGLE_CAMPUS && SINGLE_CAMPUS_SESSIONS.length > 1;
+/** Più sedi: select sede + data come prima */
+const SHOW_SEDE_AND_DATE_ROW = CAMPUSES.length > 1;
+
+function initialHeroFormState() {
+  const single = CAMPUSES.length === 1 ? CAMPUSES[0] : null;
+  const sessions = single?.sessions ?? [];
+  return {
     nome: "",
     cognome: "",
     email: "",
     telefono: "",
     comeConosciuto: "",
-  });
+    campusId: single ? single.id : "",
+    openDayDate: sessions.length === 1 ? sessions[0].apiDateTime : "",
+  };
+}
+
+/** Testo corpo hero (intro + via/date sedi): stessa scala tipografica su tutti i breakpoint */
+const HERO_BODY_COPY_CLASS =
+  "font-sarabun font-light text-[length:calc(20px-2pt)] md:text-[length:calc(24px-2pt)] xl:text-[length:calc(28px-2pt)] text-[#201f1f] leading-[1.3]";
+
+function formatItalianDateTime(value: string) {
+  const parsed = new Date(value.replace(" ", "T"));
+  if (Number.isNaN(parsed.getTime())) return value;
+
+  return new Intl.DateTimeFormat("it-IT", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+    .format(parsed)
+    .replace(/\s+alle\s+(?:ore\s+)?/i, ", ore ");
+}
+
+export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => void }) {
+  const [formData, setFormData] = useState(initialHeroFormState);
   const [privacy, setPrivacy] = useState(false);
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  const selectedCampus = useMemo(
+    () => CAMPUSES.find((campus) => campus.id === formData.campusId),
+    [formData.campusId],
+  );
+
+  const availableSessions = selectedCampus?.sessions ?? [];
 
   // Preload pagina di ringraziamento quando l'utente inizia a compilare
   useEffect(() => {
@@ -72,6 +132,21 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
       trackFormEvent('FormStarted');
     }
   }, [hasInteracted]);
+
+  // Pre-seleziona la data se la sede scelta ha una sola sessione
+  useEffect(() => {
+    if (availableSessions.length === 1) {
+      const onlySession = availableSessions[0].apiDateTime;
+      if (formData.openDayDate !== onlySession) {
+        setFormData((prev) => ({ ...prev, openDayDate: onlySession }));
+      }
+      return;
+    }
+
+    if (formData.openDayDate !== "" && !availableSessions.some((session) => session.apiDateTime === formData.openDayDate)) {
+      setFormData((prev) => ({ ...prev, openDayDate: "" }));
+    }
+  }, [availableSessions, formData.openDayDate]);
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData({ ...formData, [field]: value });
@@ -123,8 +198,21 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
       return;
     }
 
+    if (!formData.campusId || !selectedCampus) {
+      setErrorMsg("Seleziona la sede.");
+      return;
+    }
+
+    if (!formData.openDayDate) {
+      setErrorMsg("Seleziona la data.");
+      return;
+    }
+
     setStatus("loading");
-    trackFormEvent('FormSubmitted');
+    trackFormEvent("FormSubmitted", {
+      campus: selectedCampus.apiValue,
+      open_day_date: formData.openDayDate,
+    });
 
     const base = import.meta.env.BASE_URL;
     try {
@@ -137,28 +225,58 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
           email:         sanitizeInput(formData.email),
           phone_number:  sanitizeInput(formData.telefono),
           how_you_knows: formData.comeConosciuto,
+          location:      selectedCampus.apiValue,
+          open_day_date: formData.openDayDate,
         }),
       });
 
-      const data = await res.json();
+      const raw = await res.text();
+      let data: { success?: boolean; message?: string; redirect?: string };
+      try {
+        data = JSON.parse(raw) as typeof data;
+      } catch {
+        trackFormEvent("FormError", {
+          error: "Invalid JSON from submit.php",
+          campus: selectedCampus.apiValue,
+          open_day_date: formData.openDayDate,
+        });
+        setStatus("error");
+        setErrorMsg(
+          import.meta.env.DEV
+            ? "Il server PHP non risponde o non restituisce JSON. Avvia in un altro terminale, dalla cartella public: php -S localhost:8888 (stessa porta del proxy in vite.config.ts), poi riprova l’invio."
+            : "Risposta non valida dal server. Controlla i log PHP e riprova.",
+        );
+        return;
+      }
 
       if (data.success) {
-        trackFormEvent('FormSuccess');
+        trackFormEvent("FormSuccess", {
+          campus: selectedCampus.apiValue,
+          open_day_date: formData.openDayDate,
+        });
         const redirectPath = (data.redirect ?? "grazie.html").replace(/^\//, "");
         window.location.href = base + redirectPath;
       } else {
-        trackFormEvent('FormError', { error: data.message });
+        trackFormEvent("FormError", {
+          error: data.message,
+          campus: selectedCampus.apiValue,
+          open_day_date: formData.openDayDate,
+        });
         setStatus("error");
         setErrorMsg(data.message ?? "Si è verificato un errore. Riprova.");
       }
-    } catch (err) {
-      trackFormEvent('FormError', { error: 'Network error' });
+    } catch {
+      trackFormEvent("FormError", {
+        error: "Network error",
+        campus: selectedCampus.apiValue,
+        open_day_date: formData.openDayDate,
+      });
       setStatus("error");
-      if (err instanceof SyntaxError) {
-        setErrorMsg("Risposta non valida dal server. Controlla i log PHP e riprova.");
-      } else {
-        setErrorMsg("Impossibile contattare il server. Controlla la connessione e riprova.");
-      }
+      setErrorMsg(
+        import.meta.env.DEV
+          ? "Richiesta non riuscita. Verifica che PHP sia avviato su localhost:8888 (vedi messaggio sopra) e che il proxy in vite.config.ts punti alla porta corretta."
+          : "Impossibile contattare il server. Controlla la connessione e riprova.",
+      );
     }
   };
 
@@ -173,12 +291,12 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
         {/* Colonna sinistra: testo */}
         <div className="flex flex-col gap-[52px] items-start w-full xl:w-[588px]">
           <div className="flex flex-col gap-6 items-start w-full">
-            <h1 className="font-tiempos text-[48px] md:text-[64px] xl:text-[80px] text-[#d06321] leading-[1.04]">
+            <h1 className="font-tiempos text-[length:calc(48px-2pt)] md:text-[length:calc(64px-2pt)] xl:text-[length:calc(80px-2pt)] text-[#d06321] leading-[1.04]">
               Design della<br />Comunicazione
             </h1>
 
             <div className="flex flex-col gap-4 items-start w-full">
-              <p className="font-sarabun font-light text-[20px] md:text-[24px] xl:text-[28px] text-[#201f1f] leading-[1.3]">
+              <p className={HERO_BODY_COPY_CLASS}>
                 Vieni a scoprire il nostro{" "}
                 <span className="font-bold">Corso Triennale di I Livello</span>, parla
                 con gli <span className="font-bold">studenti</span> e conosci i
@@ -186,22 +304,28 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
               </p>
 
               <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-2">
-                  <span className="font-tiempos text-[#d06321] text-[20px] md:text-[28px] leading-[1]">
-                    Quando
-                  </span>
-                  <span className="font-sarabun font-light text-[#201f1f] text-[18px] md:text-[24px] leading-[1]">
-                    16 Maggio 2026, h 11.00
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="font-tiempos text-[#d06321] text-[20px] md:text-[28px] leading-[1]">
-                    Dove
-                  </span>
-                  <span className="font-sarabun font-light text-[#201f1f] text-[18px] md:text-[24px] leading-[1]">
-                    Via Balduccio da Pisa 16, Milano
-                  </span>
-                </div>
+                {CAMPUSES.length === 0 ? (
+                  <p className={HERO_BODY_COPY_CLASS}>
+                    Non risultano sedi con date Open Day attive. In{" "}
+                    <span className="font-bold">openday-config.json</span> serve almeno una voce in{" "}
+                    <span className="font-bold">campuses</span> con{" "}
+                    <span className="font-bold">sessions</span> contenente almeno una data.
+                  </p>
+                ) : (
+                  CAMPUSES.map((campus) => (
+                    <div key={campus.id} className="flex flex-col gap-2">
+                      <span className="font-tiempos text-[#d06321] text-[length:calc(20px-2pt)] md:text-[length:calc(28px-2pt)] leading-[1]">
+                        {campus.label}
+                      </span>
+                      <span className={HERO_BODY_COPY_CLASS}>{campus.address}</span>
+                      <div className={HERO_BODY_COPY_CLASS}>
+                        {(campus.sessions ?? []).map((session) => (
+                          <p key={session.id}>{formatItalianDateTime(session.apiDateTime)}</p>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -218,7 +342,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
           </div>
 
         <div className="bg-[#d06321] rounded-[24px] p-6 flex flex-col gap-3 w-full">
-          <h2 className="font-tiempos text-[40px] md:text-[52px] xl:text-[60px] text-[#f4dbcc] leading-[1]">
+          <h2 className="font-tiempos text-[length:calc(40px-2pt)] md:text-[length:calc(52px-2pt)] xl:text-[length:calc(60px-2pt)] text-[#f4dbcc] leading-[1]">
             Registrati
           </h2>
 
@@ -227,8 +351,8 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
 
               {/* Row 1: Nome, Cognome */}
               <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 flex flex-col gap-2">
-                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[18px] leading-[2.5]">
+                <div className="flex-1 flex flex-col gap-[4px]">
+                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
                     Nome*
                   </label>
                   <input
@@ -236,12 +360,12 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     placeholder="Nome"
                     value={formData.nome}
                     onChange={(e) => handleInputChange('nome', e.target.value)}
-                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
                 </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[18px] leading-[2.5]">
+                <div className="flex-1 flex flex-col gap-[4px]">
+                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
                     Cognome*
                   </label>
                   <input
@@ -249,7 +373,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     placeholder="Cognome"
                     value={formData.cognome}
                     onChange={(e) => handleInputChange('cognome', e.target.value)}
-                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
                 </div>
@@ -257,8 +381,8 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
 
               {/* Row 2: Email, Telefono */}
               <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 flex flex-col gap-2">
-                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[18px] leading-[2.5]">
+                <div className="flex-1 flex flex-col gap-[4px]">
+                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
                     Email*
                   </label>
                   <input
@@ -266,12 +390,12 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     placeholder="Email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
                 </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[18px] leading-[2.5]">
+                <div className="flex-1 flex flex-col gap-[4px]">
+                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
                     Telefono*
                   </label>
                   <input
@@ -279,22 +403,101 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                     placeholder="Telefono"
                     value={formData.telefono}
                     onChange={(e) => handleInputChange('telefono', e.target.value)}
-                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     required
                   />
                 </div>
               </div>
 
-              {/* Row 3: Come ci hai conosciuto */}
-              <div className="flex flex-col gap-2">
-                <label className="font-sarabun font-medium text-[#f4dbcc] text-[18px] leading-[2.5]">
+              {/* Sede + Data: solo se ci sono più sedi; una sede + più date: solo Data */}
+              {SHOW_SEDE_AND_DATE_ROW && (
+                <div className="flex flex-col gap-4 md:flex-row md:gap-4">
+                  <div className="flex-1 flex flex-col gap-[4px] min-w-0">
+                    <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
+                      Sede *
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.campusId}
+                        onChange={(e) => handleInputChange("campusId", e.target.value)}
+                        className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10"
+                        required
+                      >
+                        <option value="">Seleziona la sede</option>
+                        {CAMPUSES.map((campus) => (
+                          <option key={campus.id} value={campus.id}>
+                            {campus.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <ArrowDownIcon />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex flex-col gap-[4px] min-w-0">
+                    <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
+                      Data *
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.openDayDate}
+                        onChange={(e) => handleInputChange("openDayDate", e.target.value)}
+                        className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10 disabled:opacity-70"
+                        required
+                        disabled={availableSessions.length === 0}
+                      >
+                        <option value="">Seleziona Giorno</option>
+                        {availableSessions.map((session) => (
+                          <option key={session.id} value={session.apiDateTime}>
+                            {formatItalianDateTime(session.apiDateTime)}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <ArrowDownIcon />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {SHOW_DATE_ONLY_FOR_SINGLE_CAMPUS && (
+                <div className="flex flex-col gap-[4px]">
+                  <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
+                    Data *
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={formData.openDayDate}
+                      onChange={(e) => handleInputChange("openDayDate", e.target.value)}
+                      className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10"
+                      required
+                    >
+                      <option value="">Seleziona Giorno</option>
+                      {SINGLE_CAMPUS_SESSIONS.map((session) => (
+                        <option key={session.id} value={session.apiDateTime}>
+                          {formatItalianDateTime(session.apiDateTime)}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <ArrowDownIcon />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Row: Come ci hai conosciuto */}
+              <div className="flex flex-col gap-[4px]">
+                <label className="font-sarabun font-medium text-[#f4dbcc] text-[length:calc(18px-2pt)] leading-[2.5]">
                   Come ci hai conosciuto? *
                 </label>
                 <div className="relative">
                   <select
                     value={formData.comeConosciuto}
                     onChange={(e) => handleInputChange('comeConosciuto', e.target.value)}
-                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[14px] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10"
+                    className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10"
                     required
                   >
                     {HOW_YOU_KNOWS_OPTIONS.map((opt) => (
@@ -315,7 +518,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
               <div onClick={() => setPrivacy(!privacy)} className="mt-0.5 cursor-pointer">
                 <CheckboxIcon checked={privacy} />
               </div>
-              <p className="font-sarabun font-light text-[#201f1f] text-[13px] md:text-[14px] leading-[1.5]">
+              <p className="font-sarabun font-light text-[#201f1f] text-[length:calc(13px-2pt)] md:text-[length:calc(14px-2pt)] leading-[1.5]">
                 Dichiaro di aver letto l'informativa ex. Art. 13 del GDPR 679/16 e acconsento al
                 trattamento dei miei dati per ricevere informazioni sulle iniziative via E-Mail e
                 contatto telefonico.
@@ -323,7 +526,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
             </div>
 
             {errorMsg && (
-              <p className="font-sarabun text-[13px] text-white leading-[1.5] -mt-2">
+              <p className="font-sarabun text-[length:calc(13px-2pt)] text-white leading-[1.5] -mt-2">
                 {errorMsg}
               </p>
             )}
@@ -338,7 +541,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                   : "cursor-pointer hover:opacity-90 active:scale-[0.98]"
               }`}
             >
-              <span className="font-tiempos text-[18px] md:text-[20px] text-[#d06321] whitespace-nowrap leading-none">
+              <span className="font-tiempos text-[length:calc(18px-2pt)] md:text-[length:calc(20px-2pt)] text-[#d06321] whitespace-nowrap leading-none">
                 {status === "loading" ? "Invio in corso…" : "Invia la tua richiesta"}
               </span>
             </button>

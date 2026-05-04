@@ -2,7 +2,7 @@ import svgPaths from "../../imports/svg-ffe0txzxzn";
 
 export function BrandIdentity() {
   return (
-    <div className="h-[60px] w-[61px] md:h-[86px] md:w-[87px] shrink-0">
+    <div className="h-[50px] w-[51px] md:h-[76px] md:w-[77px] shrink-0">
       <svg className="block size-full" fill="none" preserveAspectRatio="xMidYMid meet" viewBox="0 0 87.0109 86.011">
         <g id="brand_identity">
           <path d={svgPaths.p182a8b00} fill="white" />

@@ -1,0 +1,45 @@
+{
+  "requestDescription": "Richiesta da Landing",
+  "course": ["corso triennale di i livello in design della comunicazione"],
+  "origin": ["website", "landing", "openday"],
+  "campuses": [
+    {
+      "id": "milano",
+      "label": "Milano",
+      "apiValue": "Milano",
+      "address": "Via Balduccio da Pisa 16, Milano",
+      "sessions": [
+        {
+          "id": "milano-1",
+          "apiDateTime": "2026-05-16 11:00"
+        }
+      ]
+    },
+    {
+      "id": "napoli",
+      "label": "Napoli",
+      "apiValue": "Napoli",
+      "address": "[INSERISCI INDIRIZZO SEDE NAPOLI]",
+      "sessions": [
+        {
+          "id": "napoli-1",
+          "apiDateTime": "2026-05-23 10:00"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "contacts": [
+      {
+        "title": "Accademia IUAD Napoli",
+        "phone": "+39 081 554 0383",
+        "email": "info@accademiamoda.it"
+      },
+      {
+        "title": "Accademia IUAD Milano",
+        "phone": "+39 081 554 0383",
+        "email": "info@accademiamoda.it"
+      }
+    ]
+  }
+}
