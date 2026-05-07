@@ -207,6 +207,7 @@ $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 // curl_close() rimosso: no-op da PHP 8.0, deprecato in PHP 8.5
 
 if ($curlError) {
+    error_log('[IUAD] cURL error verso Eduarth: ' . $curlError);
     ob_end_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Errore di connessione all\'API.']);
@@ -232,8 +233,10 @@ function sendHtmlMail(string $to, string $subject, string $body, string $from, s
     $headers .= "Content-type: text/html; charset=UTF-8\r\n";
     $headers .= "From: $fromName <$from>\r\n";
     $headers .= "Reply-To: $from\r\n";
+    $headers .= "Return-Path: $from\r\n";
     $headers .= 'X-Mailer: PHP/' . phpversion();
-    return mail($to, $subject, $body, $headers);
+    // Envelope sender esplicito: migliora compatibilita' con MTA/relay.
+    return mail($to, $subject, $body, $headers, "-f$from");
 }
 
 $firstName   = htmlspecialchars($data['first_name']);
@@ -349,7 +352,10 @@ $userBody = "
 </html>
 ";
 
-sendHtmlMail($data['email'], $userSubject, $userBody, $emailFrom, $emailFromName);
+$userMailSent = sendHtmlMail($data['email'], $userSubject, $userBody, $emailFrom, $emailFromName);
+if (!$userMailSent) {
+    error_log('[IUAD] Invio email utente fallito verso: ' . $data['email']);
+}
 
 // ── Email 2: Notifica interna all'accademia ────────────────────────────────
 $academySubject = 'Nuova iscrizione Open Day – Design della Comunicazione';
@@ -435,7 +441,10 @@ $academyBody = "
 </html>
 ";
 
-sendHtmlMail($emailToAcademy, $academySubject, $academyBody, $emailFrom, $emailFromName);
+$academyMailSent = sendHtmlMail($emailToAcademy, $academySubject, $academyBody, $emailFrom, $emailFromName);
+if (!$academyMailSent) {
+    error_log('[IUAD] Invio email accademia fallito verso: ' . $emailToAcademy);
+}
 
 // ── Risposta al frontend ───────────────────────────────────────────────────
 ob_end_clean();
@@ -448,5 +457,9 @@ echo json_encode([
     'success'       => true,
     'leads_created' => $responseData['leads_created'] ?? 0,
     'leads_updated' => $responseData['leads_updated'] ?? 0,
+    'mail'          => [
+        'user_sent' => $userMailSent,
+        'academy_sent' => $academyMailSent,
+    ],
     'redirect'      => 'grazie.html?' . $redirectQuery,
 ]);
