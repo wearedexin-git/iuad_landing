@@ -1,16 +1,43 @@
 import { defineConfig } from 'vite'
 import path from 'path'
+import fs from 'fs'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  // Per test locale usa '/', per production ripristina '/landing/design-della-comunicazione/'
-  base: '/',
+// Copia `src/app/config/openday-config.json` in `dist/config/openday-config.json`
+// durante `vite build`, così che `public/submit.php` possa leggerlo a runtime in
+// produzione (il frontend lo importa come modulo ES, ma il PHP ha bisogno del
+// file fisico nella cartella deployata).
+function copyOpendayConfig() {
+  return {
+    name: 'copy-openday-config',
+    apply: 'build' as const,
+    closeBundle() {
+      const src = path.resolve(__dirname, 'src/app/config/openday-config.json')
+      const destDir = path.resolve(__dirname, 'dist/config')
+      const dest = path.resolve(destDir, 'openday-config.json')
+
+      if (!fs.existsSync(src)) {
+        throw new Error(`[copy-openday-config] File sorgente non trovato: ${src}`)
+      }
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true })
+      }
+      fs.copyFileSync(src, dest)
+    },
+  }
+}
+
+export default defineConfig(({ command }) => ({
+  // In dev (`vite`) usa '/' per servire dalla root locale.
+  // In build (`vite build`) usa il path di produzione sotto cui la landing è pubblicata.
+  base: command === 'build' ? '/landing/design-comunicazione/' : '/',
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    copyOpendayConfig(),
   ],
   resolve: {
     alias: {
@@ -74,10 +101,10 @@ export default defineConfig({
         target: 'http://localhost:8888',
         changeOrigin: true,
       },
-      '/landing/design-della-comunicazione/submit.php': {
+      '/landing/design-comunicazione/submit.php': {
         target: 'http://localhost:8888',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/landing\/design-della-comunicazione/, ''),
+        rewrite: (path) => path.replace(/^\/landing\/design-comunicazione/, ''),
       },
     },
   },
@@ -89,4 +116,4 @@ export default defineConfig({
       'react-dom',
     ],
   },
-})
+}))

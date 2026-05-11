@@ -64,7 +64,15 @@ function formatOpenDayDateLabel(string $openDayDate): string
 }
 
 // ── Config landing condivisa frontend/backend ──────────────────────────────
-$landingConfigPath = __DIR__ . '/../src/app/config/openday-config.json';
+// In produzione `submit.php` sta nella radice della build (dist/) accanto a
+// `config/openday-config.json` copiato dal plugin Vite `copy-openday-config`.
+// In dev `submit.php` sta in `public/`, quindi il config va cercato un livello
+// sopra, in `src/app/config/`.
+$landingConfigPathProd = __DIR__ . '/config/openday-config.json';
+$landingConfigPathDev  = __DIR__ . '/../src/app/config/openday-config.json';
+$landingConfigPath = file_exists($landingConfigPathProd)
+    ? $landingConfigPathProd
+    : $landingConfigPathDev;
 $landingConfig = loadJsonConfig($landingConfigPath);
 $campuses = $landingConfig['campuses'] ?? [];
 
