@@ -25,13 +25,24 @@ function ArrowDownIcon() {
 function CheckboxIcon({ checked }: { checked: boolean }) {
   return (
     <div
-      className={`w-6 h-6 rounded shrink-0 border flex items-center justify-center cursor-pointer transition-colors ${
+      className={`relative w-6 h-6 rounded shrink-0 border cursor-pointer transition-colors ${
         checked ? "bg-white border-white" : "bg-transparent border-[#ddd]"
       }`}
     >
       {checked && (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
-          <path d={svgPaths.pb0709b2} fill="#d06321" />
+        <svg
+          className="absolute inset-0 m-auto w-3.5 h-3.5 block"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            d="M6 12.5L10 16L18 8"
+            stroke="#d06321"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       )}
     </div>
@@ -60,7 +71,8 @@ type Campus = {
   id: string;
   label: string;
   apiValue: string;
-  address: string;
+  address?: string;
+  mode?: "onsite" | "online";
   sessions?: Session[];
 };
 
@@ -109,6 +121,19 @@ function formatItalianDateTime(value: string) {
   })
     .format(parsed)
     .replace(/\s+alle\s+(?:ore\s+)?/i, ", ore ");
+}
+
+function getCampusDisplayLocation(campus: Campus) {
+  if (campus.mode === "online") {
+    return "Online, in inglese";
+  }
+
+  const normalizedAddress = (campus.address ?? "").trim().toLowerCase();
+  if (normalizedAddress === "online") {
+    return "Online, in inglese";
+  }
+
+  return campus.address;
 }
 
 export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => void }) {
@@ -317,7 +342,9 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                       <span className="font-tiempos text-[#d06321] text-[length:calc(20px-2pt)] md:text-[length:calc(28px-2pt)] leading-[1]">
                         {campus.label}
                       </span>
-                      <span className={HERO_BODY_COPY_CLASS}>{campus.address}</span>
+                      <span className={HERO_BODY_COPY_CLASS}>
+                        {getCampusDisplayLocation(campus)}
+                      </span>
                       <div className={HERO_BODY_COPY_CLASS}>
                         {(campus.sessions ?? []).map((session) => (
                           <p key={session.id}>{formatItalianDateTime(session.apiDateTime)}</p>
