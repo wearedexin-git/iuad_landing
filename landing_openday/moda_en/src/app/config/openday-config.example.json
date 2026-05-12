@@ -1,0 +1,57 @@
+{
+  "requestDescription": "Richiesta da Landing",
+  "course": ["corso triennale di i livello in design della moda"],
+  "origin": ["website", "landing", "openday"],
+  "campuses": [
+    {
+      "id": "milano",
+      "label": "Milano",
+      "apiValue": "Milano",
+      "address": "Via Console Flaminio 19",
+      "sessions": [
+        {
+          "id": "milano-1",
+          "apiDateTime": "2026-05-16 11:00"
+        }
+      ]
+    },
+    {
+      "id": "napoli",
+      "label": "Napoli",
+      "apiValue": "Napoli",
+      "address": "Corso A. Lucci 104",
+      "sessions": [
+        {
+          "id": "napoli-1",
+          "apiDateTime": "2026-05-23 10:00"
+        }
+      ]
+    },
+    {
+      "id": "online-inglese",
+      "label": "Online (inglese)",
+      "apiValue": "Online Inglese",
+      "mode": "online",
+      "sessions": [
+        {
+          "id": "online-inglese-1",
+          "apiDateTime": "2026-06-07 15:00"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "contacts": [
+      {
+        "title": "Accademia IUAD Napoli",
+        "phone": "+39 081 554 0383",
+        "email": "info@iuad.it"
+      },
+      {
+        "title": "Accademia IUAD Milano",
+        "phone": "+39 081 554 0383",
+        "email": "milano@iuad.it"
+      }
+    ]
+  }
+}

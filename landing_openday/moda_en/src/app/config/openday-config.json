@@ -1,0 +1,28 @@
+{
+  "requestDescription": "Richiesta da Landing",
+  "course": ["corso triennale di i livello in design della moda"],
+  "origin": ["website", "landing", "openday"],
+  "campuses": [
+    {
+      "id": "online-inglese",
+      "label": "Milano",
+      "apiValue": "Online Inglese",
+      "mode": "online",
+      "sessions": [
+        {
+          "id": "online-inglese-1",
+          "apiDateTime": "2026-06-11 16:00"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "contacts": [
+      {
+        "title": "IUAD Academy, Milan",
+        "phone": "+39 02 66703030",
+        "email": "imilano@iuad.it"
+      }
+    ]
+  }
+}
