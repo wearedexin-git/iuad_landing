@@ -263,7 +263,23 @@ $howYouKnowsMap = [
 ];
 $howYouKnowsLabel = $howYouKnowsMap[$data['how_you_knows']] ?? 'Non specificato';
 
-$logoBase64 = 'https://www.accademiamoda.it/wp-content/uploads/2022/05/IUAD-logo-nero-2022.png';
+$logoPath = __DIR__ . '/assets/logo_iuad_black.png';
+$logoSrc  = '';
+if (is_readable($logoPath)) {
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    if ($host !== '') {
+        $https  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+            || (isset($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443');
+        $scheme = $https ? 'https' : 'http';
+        $dir     = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+        $dir     = ($dir === '/' || $dir === '.') ? '' : rtrim($dir, '/');
+        $logoSrc = $scheme . '://' . $host . $dir . '/assets/logo_iuad_black.png';
+    }
+    if ($logoSrc === '') {
+        $logoSrc = 'data:image/png;base64,' . base64_encode((string) file_get_contents($logoPath));
+    }
+}
 
 // ── Email 1: Conferma all'utente ───────────────────────────────────────────
 $userSubject = 'Iscrizione confermata – Open Day Design della Moda | IUAD';
@@ -280,7 +296,7 @@ $userBody = "
         <tr>
           <td align='center' style='padding:36px 40px 24px;background:#ffffff;'>
             <img
-              src='$logoBase64'
+              src='$logoSrc'
               alt='IUAD Accademia di Moda e Design' width='80'
               style='display:block;margin:0 auto 20px;max-width:80px;'>
             <h1 style='margin:0;font-size:22px;font-weight:bold;color:#8D9EBD;font-family:Georgia,serif;'>
@@ -380,7 +396,7 @@ $academyBody = "
         <tr>
           <td align='center' style='padding:36px 40px 28px;background:#ffffff;'>
             <img
-              src='$logoBase64'
+              src='$logoSrc'
               alt='IUAD Accademia di Moda e Design' width='80'
               style='display:block;margin:0 auto 20px;max-width:80px;'>
             <h1 style='margin:0;font-size:22px;font-weight:bold;color:#201f1f;font-family:Georgia,serif;'>
