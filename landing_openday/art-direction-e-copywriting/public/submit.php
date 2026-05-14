@@ -263,7 +263,7 @@ $howYouKnowsMap = [
 ];
 $howYouKnowsLabel = $howYouKnowsMap[$data['how_you_knows']] ?? 'Non specificato';
 
-$logoBase64 = 'https://www.accademiamoda.it/wp-content/uploads/2022/05/IUAD-logo-nero-2022.png';
+$logoBase64 = 'https://www.accademiamoda.it/landing/art-direction-e-copywriting/assets/logo_iuad_black.png';
 
 // ── Email 1: Conferma all'utente ───────────────────────────────────────────
 $userSubject = 'Iscrizione confermata – Open Day Art Direction & Copywriting | IUAD';
