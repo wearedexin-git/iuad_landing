@@ -263,7 +263,28 @@ $howYouKnowsMap = [
 ];
 $howYouKnowsLabel = $howYouKnowsMap[$data['how_you_knows']] ?? 'Non specificato';
 
-$logoBase64 = 'https://www.accademiamoda.it/wp-content/uploads/2022/05/IUAD-logo-nero-2022.png';
+// Logo email: stesso file in `public/assets/` (in dist accanto a submit.php).
+// URL assoluto ricavato dalla richiesta (i client mail non risolvono path relativi).
+$logoPath = __DIR__ . '/assets/logo_iuad_black.png';
+$emailLogoSrc = '';
+if (is_readable($logoPath)) {
+    if (!empty($_SERVER['HTTP_HOST'])) {
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
+            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])
+                && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+        $scheme = $https ? 'https' : 'http';
+        $scriptDir = dirname(str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? '')));
+        $basePath = ($scriptDir === '/' || $scriptDir === '\\' || $scriptDir === '.') ? '' : rtrim($scriptDir, '/');
+        $emailLogoSrc = $scheme . '://' . $_SERVER['HTTP_HOST'] . $basePath . '/assets/logo_iuad_black.png';
+    }
+    if ($emailLogoSrc === '') {
+        $rawLogo = file_get_contents($logoPath);
+        if ($rawLogo !== false) {
+            $emailLogoSrc = 'data:image/png;base64,' . base64_encode($rawLogo);
+        }
+    }
+}
 
 // ── Email 1: Conferma all'utente ───────────────────────────────────────────
 $userSubject = 'Iscrizione confermata – Open Day Design della Comunicazione | IUAD';
@@ -280,7 +301,7 @@ $userBody = "
         <tr>
           <td align='center' style='padding:36px 40px 24px;background:#ffffff;'>
             <img
-              src='$logoBase64'
+              src='$emailLogoSrc'
               alt='IUAD Accademia di Moda e Design' width='80'
               style='display:block;margin:0 auto 20px;max-width:80px;'>
             <h1 style='margin:0;font-size:22px;font-weight:bold;color:#d06321;font-family:Georgia,serif;'>
@@ -380,7 +401,7 @@ $academyBody = "
         <tr>
           <td align='center' style='padding:36px 40px 28px;background:#ffffff;'>
             <img
-              src='$logoBase64'
+              src='$emailLogoSrc'
               alt='IUAD Accademia di Moda e Design' width='80'
               style='display:block;margin:0 auto 20px;max-width:80px;'>
             <h1 style='margin:0;font-size:22px;font-weight:bold;color:#201f1f;font-family:Georgia,serif;'>
