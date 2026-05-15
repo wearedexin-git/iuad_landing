@@ -1,0 +1,30 @@
+{
+  "requestDescription": "Richiesta da Landing",
+  "course": ["corso triennale di i livello in design della moda indirizzo fashion business & management"],
+  "courseMailLabel": "Design della Moda indirizzo Business & Management",
+  "origin": ["website", "landing", "openday"],
+  "campuses": [
+    {
+      "id": "milano",
+      "label": "Milan",
+      "apiValue": "Milano",
+      "mode": "online",
+      "address": "online",
+      "sessions": [
+        {
+          "id": "milano-online-1",
+          "apiDateTime": "2026-06-11 16:00"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "contacts": [
+      {
+        "title": "IUAD Milan",
+        "phone": "+39 02 66703030",
+        "email": "milano@iuad.it"
+      }
+    ]
+  }
+}
