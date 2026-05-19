@@ -139,7 +139,7 @@ $data = [
     'email'               => trim($input['email']),
     'phone_number'        => trim($input['phone_number']),
     'lang'                => 'it',
-    'course'              => $landingConfig['course'] ?? ['corso triennale di i livello in design della moda'],
+    'course'              => $landingConfig['course'] ?? ['design della moda eng'],
     'origin'              => $landingConfig['origin'] ?? ['website', 'landing', 'openday'],
     'how_you_knows'       => (int) $input['how_you_knows'],
     'open_day_date'       => $selectedOpenDayDate,
@@ -263,7 +263,13 @@ $howYouKnowsMap = [
 ];
 $howYouKnowsLabel = $howYouKnowsMap[$data['how_you_knows']] ?? 'Not specified';
 
-$logoBase64 = 'https://www.accademiamoda.it/wp-content/uploads/2022/05/IUAD-logo-nero-2022.png';
+$logoPath = dirname(__DIR__) . '/src/assets/logo_iuad_black.png';
+$logoBase64 = '';
+if (file_exists($logoPath)) {
+    $logoBase64 = 'data:image/png;base64,' . base64_encode((string) file_get_contents($logoPath));
+} else {
+    error_log('[IUAD] Logo non trovato: ' . $logoPath);
+}
 
 // ── Email 1: Conferma all'utente ───────────────────────────────────────────
 $userSubject = 'Registration confirmed – Fashion Design Open Day | IUAD';
