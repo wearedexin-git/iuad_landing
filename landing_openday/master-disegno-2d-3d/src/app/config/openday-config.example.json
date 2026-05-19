@@ -1,0 +1,29 @@
+{
+  "requestDescription": "Richiesta da Landing",
+  "course": ["corso triennale di i livello in design della moda indirizzo fashion business & management"],
+  "courseMailLabel": "Disegno Tecnico per la Moda 2D/3D",
+  "origin": ["website", "landing", "openday"],
+  "campuses": [
+    {
+      "id": "napoli",
+      "label": "Napoli",
+      "apiValue": "Napoli",
+      "address": "Corso A. Lucci 104",
+      "sessions": [
+        {
+          "id": "napoli-1",
+          "apiDateTime": "2026-07-14 10:00"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "contacts": [
+      {
+        "title": "IUAD Napoli",
+        "phone": "+39 081 554 0383",
+        "email": "info@iuad.it"
+      }
+    ]
+  }
+}
