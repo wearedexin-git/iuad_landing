@@ -1,0 +1,28 @@
+{
+  "requestDescription": "Richiesta da Landing",
+  "course": ["regia per il cinema e la pubblicità"],
+  "origin": ["website", "landing", "openday"],
+  "campuses": [
+    {
+      "id": "napoli",
+      "label": "Napoli",
+      "apiValue": "Napoli",
+      "address": "Corso A. Lucci 104",
+      "sessions": [
+        {
+          "id": "napoli-1",
+          "apiDateTime": "2026-07-15 10:00"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "contacts": [
+      {
+        "title": "Accademia IUAD Napoli",
+        "phone": "+39 081 554 0383",
+        "email": "info@accademiamoda.it"
+      }
+    ]
+  }
+}
