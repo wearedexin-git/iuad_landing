@@ -268,7 +268,21 @@ $howYouKnowsMap = [
 ];
 $howYouKnowsLabel = $howYouKnowsMap[$data['how_you_knows']] ?? 'Non specificato';
 
-$logoBase64 = 'https://www.accademiamoda.it/wp-content/uploads/2022/05/IUAD-logo-nero-2022.png';
+$logoBase64 = '';
+$logoCandidates = [
+    __DIR__ . '/assets/images/logo_iuad_black.png',
+    dirname(__DIR__) . '/src/assets/logo_iuad_black.png',
+];
+foreach ($logoCandidates as $logoPath) {
+    if (!is_readable($logoPath)) {
+        continue;
+    }
+    $logoContents = file_get_contents($logoPath);
+    if ($logoContents !== false) {
+        $logoBase64 = 'data:image/png;base64,' . base64_encode($logoContents);
+        break;
+    }
+}
 
 // ── Email 1: Conferma all'utente ───────────────────────────────────────────
 $userSubject = 'Iscrizione confermata – Open Day ' . $courseMailLabel . ' | IUAD';

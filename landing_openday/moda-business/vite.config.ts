@@ -4,26 +4,58 @@ import fs from 'fs'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
-// Copia `src/app/config/openday-config.json` in `dist/config/openday-config.json`
-// durante `vite build`, così che `public/submit.php` possa leggerlo a runtime in
-// produzione (il frontend lo importa come modulo ES, ma il PHP ha bisogno del
-// file fisico nella cartella deployata).
-function copyOpendayConfig() {
+const LOGO_SRC = path.resolve(__dirname, 'src/assets/logo_iuad_black.png')
+const LOGO_PUBLIC_PATH = '/assets/images/logo_iuad_black.png'
+
+// Copia asset di deploy in `dist/` durante `vite build` (config JSON + logo IUAD).
+function copyDeployAssets() {
   return {
-    name: 'copy-openday-config',
+    name: 'copy-deploy-assets',
     apply: 'build' as const,
     closeBundle() {
-      const src = path.resolve(__dirname, 'src/app/config/openday-config.json')
-      const destDir = path.resolve(__dirname, 'dist/config')
-      const dest = path.resolve(destDir, 'openday-config.json')
+      const configSrc = path.resolve(__dirname, 'src/app/config/openday-config.json')
+      const configDestDir = path.resolve(__dirname, 'dist/config')
+      const configDest = path.resolve(configDestDir, 'openday-config.json')
 
-      if (!fs.existsSync(src)) {
-        throw new Error(`[copy-openday-config] File sorgente non trovato: ${src}`)
+      if (!fs.existsSync(configSrc)) {
+        throw new Error(`[copy-deploy-assets] File sorgente non trovato: ${configSrc}`)
       }
-      if (!fs.existsSync(destDir)) {
-        fs.mkdirSync(destDir, { recursive: true })
+      if (!fs.existsSync(configDestDir)) {
+        fs.mkdirSync(configDestDir, { recursive: true })
       }
-      fs.copyFileSync(src, dest)
+      fs.copyFileSync(configSrc, configDest)
+
+      if (!fs.existsSync(LOGO_SRC)) {
+        throw new Error(`[copy-deploy-assets] Logo non trovato: ${LOGO_SRC}`)
+      }
+      const logoDestDir = path.resolve(__dirname, 'dist/assets/images')
+      const logoDest = path.resolve(logoDestDir, 'logo_iuad_black.png')
+      if (!fs.existsSync(logoDestDir)) {
+        fs.mkdirSync(logoDestDir, { recursive: true })
+      }
+      fs.copyFileSync(LOGO_SRC, logoDest)
+    },
+  }
+}
+
+// In dev serve il logo da `src/assets` per `grazie.html` e `submit.php`.
+function serveLogoInDev() {
+  return {
+    name: 'serve-logo-in-dev',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = req.url?.split('?')[0] ?? ''
+        if (url !== LOGO_PUBLIC_PATH && !url.endsWith(LOGO_PUBLIC_PATH)) {
+          next()
+          return
+        }
+        if (!fs.existsSync(LOGO_SRC)) {
+          next()
+          return
+        }
+        res.setHeader('Content-Type', 'image/png')
+        fs.createReadStream(LOGO_SRC).pipe(res)
+      })
     },
   }
 }
@@ -37,7 +69,8 @@ export default defineConfig(({ command }) => ({
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
-    copyOpendayConfig(),
+    copyDeployAssets(),
+    serveLogoInDev(),
   ],
   resolve: {
     alias: {
