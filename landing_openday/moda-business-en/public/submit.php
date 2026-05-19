@@ -144,7 +144,7 @@ $data = [
     'email'               => trim($input['email']),
     'phone_number'        => trim($input['phone_number']),
     'lang'                => 'it',
-    'course'              => $landingConfig['course'] ?? ['corso triennale di i livello in design della moda indirizzo fashion business & management'],
+    'course'              => $landingConfig['course'] ?? ['fashion business eng'],
     'origin'              => $landingConfig['origin'] ?? ['website', 'landing', 'openday'],
     'how_you_knows'       => (int) $input['how_you_knows'],
     'open_day_date'       => $selectedOpenDayDate,
@@ -268,7 +268,10 @@ $howYouKnowsMap = [
 ];
 $howYouKnowsLabel = $howYouKnowsMap[$data['how_you_knows']] ?? 'Non specificato';
 
-$logoBase64 = 'https://www.accademiamoda.it/wp-content/uploads/2022/05/IUAD-logo-nero-2022.png';
+$logoPath = __DIR__ . '/assets/logo_iuad_black.png';
+$logoBase64 = file_exists($logoPath)
+    ? 'data:image/png;base64,' . base64_encode((string) file_get_contents($logoPath))
+    : '';
 
 // ── Email 1: Conferma all'utente ───────────────────────────────────────────
 $userSubject = 'Iscrizione confermata – Open Day ' . $courseMailLabel . ' | IUAD';
