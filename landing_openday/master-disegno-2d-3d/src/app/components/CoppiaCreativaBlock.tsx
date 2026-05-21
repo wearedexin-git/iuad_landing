@@ -31,12 +31,10 @@ export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }
         <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
           <div className="flex flex-col gap-6">
             <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#8D9EBD] leading-[1.1]">
-              Il punto d&apos;incontro tra creatività e strategia.
+            Lo sviluppo del prodotto
             </h2>
             <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
-              L&apos;indirizzo in <span className="font-bold">Business &amp; Management</span> nasce per formare il{" "}
-              <span className="font-bold">Designer Manager</span>: una figura chiave che unisce il talento creativo alle attuali esigenze di mercato. È la scelta ideale se, oltre a muoverti tra tessuti e collezioni, desideri sviluppare{" "}
-              <span className="font-bold">piani strategici e obiettivi aziendali</span> con capacità e fluidità.
+            <span className="font-bold">Il modellista digitale trasforma la creatività dello stilista in un prodotto industriale impeccabile.</span> Mentre la progettazione 2D definisce le basi tecniche, lo sviluppo in 3D dà vita al capo direttamente sull'avatar: una sinergia totale che permette di simulare la caduta del tessuto, il panneggio e la vestibilità prima ancora del taglio del tessuto, azzerando i tempi di produzione.
             </p>
           </div>
           <CTAButton onClick={onBookClick} className="self-start" />

@@ -74,11 +74,10 @@ export function CourseBlock({ onBookClick }: { onBookClick: () => void }) {
         <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
           <div className="flex flex-col gap-6">
             <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#8D9EBD] leading-[1.1]">
-              Competenze globali per la tua carriera.
+            Tecnica e narrazione
             </h2>
             <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
-              Durante il triennio svilupperai anche le <span className="font-bold">competenze linguistiche</span> necessarie per affacciarti con successo sui mercati esteri. Al termine del percorso, avrai la preparazione per inserirti subito nel mondo del lavoro come{" "}
-              <span className="font-bold">Buyer o Project Manager</span>, oppure per affrontare la sfida di lanciare il tuo brand.
+            <span className="font-bold">Durante il Master studierai Modellistica industriale e Progettazione grafica 2D, ma imparerai anche a muoverti sui software richiesti dalle grandi aziende di abbigliamento.</span> Dai laboratori CAD con il software Lectra per lo sviluppo del cartamodello bidimensionale, fino alle frontiere della simulazione tridimensionale con CLO3D, acquisirai gli strumenti per gestire ogni fase della pipeline di sviluppo prodotto, compresi lo styling e l'organizzazione d'impresa.
             </p>
           </div>
           <CTAButton onClick={onBookClick} className="self-start" />

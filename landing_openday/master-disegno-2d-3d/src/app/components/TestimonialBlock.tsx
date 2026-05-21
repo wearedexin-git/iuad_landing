@@ -36,22 +36,22 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: "Alessia",
-    role: "Product Manager",
+    name: "Martina",
+    role: "Specialista",
     quote:
-      "Il doppio profilo che ho acquisito qui ha fatto la differenza: conosco i processi produttivi dall'ideazione al prodotto finito, ma so anche gestire budget, tempistiche e fornitori. Oggi coordino lo sviluppo di tre linee per un brand italiano e il mio background in design mi permette di parlare sia con i creativi che con il reparto commerciale.",
+      "Dopo la laurea triennale volevo specializzarmi su strumenti concreti richiesti dalle aziende. Questo Master mi ha permesso di padroneggiare software come CLO3D in modo incredibilmente rapido. Ora lavoro nell'ufficio sviluppo prodotto di un brand di abbigliamento e applico ogni giorno il metodo appreso nei laboratori.",
   },
   {
-    name: "Davide",
-    role: "Brand Manager",
-    quote:
-      "Durante il corso ho capito che il vero valore sta nel saper unire estetica e strategia. Ho imparato a costruire piani di marketing, analizzare il posizionamento e gestire il ciclo di vita del brand.",
-  },
-  {
-    name: "Luca",
+    name: "Gabriele",
     role: "Studente",
     quote:
-      "Non immaginavo che avrei studiato tanto management insieme al design, sto imparando a ragionare come un vero manager. Il bello è che non studi solo teoria: affronti casi reali, impari a presentare progetti e a lavorare in team proprio come in azienda.",
+      "La forza di questo percorso è la totale assenza di teoria fine a se stessa. Lavoriamo direttamente sulla simulazione dei tessuti e sulla vestibilità degli avatar, correggendo i difetti del cartamodello in tempo reale sul manichino virtuale. I docenti sono professionisti che parlano la lingua del mercato e ti preparano agli standard reali.",
+  },
+  {
+    name: "Francesca",
+    role: "Modellista digitale freelance",
+    quote:
+      "Imparare a far dialogare la modellistica tradizionale su carta con la realtà virtuale in 3D ha completamente cambiato il mio modo di lavorare. IUAD ti dà le competenze per essere operativi subito: grazie al portfolio tecnico sviluppato durante i dodici mesi, ho iniziato a collaborare con diverse aziende subito dopo il diploma del Master.",
   },
 ];
 

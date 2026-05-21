@@ -318,8 +318,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
           <div className="flex flex-col gap-6 items-start w-full">
             <h1 className="font-tiempos text-[length:calc(48px-2pt)] md:text-[length:calc(64px-2pt)] xl:text-[length:calc(80px-2pt)] text-[#8D9EBD] leading-[1.04]">
               Disegno Tecnico
-              <br />
-               per la Moda2D/3D
+               per la Moda 2D/3D
             </h1>
 
             <div className="flex flex-col gap-4 items-start w-full">

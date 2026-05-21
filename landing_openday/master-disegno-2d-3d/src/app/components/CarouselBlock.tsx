@@ -2,13 +2,6 @@ import { useRef, useState, useEffect } from "react";
 import imgRectangle11 from "../../assets/carousel_image_1.jpg";
 import imgRectangle1 from "../../assets/carousel_image_2.jpg";
 import imgRectangle2 from "../../assets/carousel_image_3.jpg";
-import imgRectangle4 from "../../assets/carousel_image_4.jpg";
-import imgRectangle12 from "../../assets/carousel_image_5.jpg";
-import imgRectangle3 from "../../assets/carousel_image_6.jpg";
-import imgRectangle5 from "../../assets/carousel_image_7.jpg";
-import imgRectangle8 from "../../assets/carousel_image_8.jpg";
-import imgRectangle14 from "../../assets/carousel_image_9.jpg";
-import imgRectangle10 from "../../assets/carousel_image_10.jpg";
 import svgPaths from "../../imports/svg-ffe0txzxzn";
 import { CTAButton } from "./CTAButton";
 import { LazyImage } from "./LazyImage";
@@ -17,13 +10,6 @@ const images = [
   imgRectangle11,
   imgRectangle1,
   imgRectangle2,
-  imgRectangle4,
-  imgRectangle12,
-  imgRectangle3,
-  imgRectangle5,
-  imgRectangle8,
-  imgRectangle14,
-  imgRectangle10,
 ];
 
 function ArrowIcon({ direction }: { direction: "left" | "right" }) {
