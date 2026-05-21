@@ -36,22 +36,22 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: "Marco",
-    role: "Studente Regia per il Cinema e la Pubblicità",
-    quote:
-      "Fin dai primi progetti abbiamo lavorato su casi reali: identità visive, impaginazione, contenuti digitali e presentazioni pensate come nel lavoro vero. La cosa che mi è servita di più è stata imparare a ragionare sui progetti, non solo a usare i programmi.",
-  },
-  {
-    name: "Elena",
-    role: "Junior Graphic Designer",
-    quote:
-      "La parte più utile per me è stata costruire un portfolio progetto dopo progetto. Non fai esercizi fini a se stessi: ti confronti con brief, revisioni e scelte da motivare. Questo mi ha aiutata a capire meglio in cosa sono più forte e a sentirmi più pronta per lavorare in studio o in agenzia.",
-  },
-  {
-    name: "Luca",
+    name: "Claudio",
     role: "Studente",
     quote:
-      "Quello che ho apprezzato di più è che il corso ti obbliga a metterti in gioco davvero. Lavori in modo trasversale tra grafica, contenuti, interfacce e presentazione delle idee, quindi impari a essere più versatile. Alla fine non esci solo con nozioni, ma con un metodo e con lavori concreti da mostrare.",
+      "La differenza principale in IUAD la fa il tempo che passi sul set. Non ci limitiamo a studiare la teoria del cinema, ma impariamo a gestire le telecamere, le luci e il coordinamento della troupe. Grazie al triennio ho realizzato cortometraggi e spot pubblicitari che ora fanno parte del mio showreel professionale.",
+  },
+  {
+    name: "Federica",
+    role: "Videomaker freelance",
+    quote:
+      "Cercavo un percorso che mi insegnasse sia il linguaggio del cinema sia i tempi serrati della pubblicità. In questo corso ho trovato esattamente quello che serviva: docenti che lavorano nelle produzioni reali e che pretendono il massimo. Ho iniziato a lavorare come assistente alla regia subito dopo aver concluso gli studi.",
+  },
+  {
+    name: "Alessio",
+    role: "Studente",
+    quote:
+      "Questo corso ti costringe a metterti in gioco fin da subito. Passare dalla stesura di una sceneggiatura al montaggio finale ti dà una visione completa di cosa significhi fare il regista oggi. È una scuola che funziona come una vera casa di produzione, dove impari sbagliando e perfezionando ogni progetto.",
   },
 ];
 

@@ -28,10 +28,10 @@ export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }
         <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
           <div className="flex flex-col gap-6">
             <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#801718] leading-[1.1]">
-              Diventa un progettista della comunicazione
+              La sinergia sul set
             </h2>
             <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
-              Il corso Triennale in <span className="font-bold">Regia per il Cinema e la Pubblicità</span> è il percorso ideale per chi vuole trasformare la propria creatività in un metodo di lavoro solido. Non imparerai solo la tecnica, ma sarai in grado di <span className="font-bold">pianificare strategie digitali</span>, <span className="font-bold">di marketing</span> e <span className="font-bold">di comunicazione pubblicitaria</span>, acquisendo una visione d'insieme che ti permette di governare ogni fase di un progetto creativo.
+              <span className="font-bold">Visione, tecnica e coordinamento sono il motore di ogni produzione. Il regista è la figura centrale che trasforma un'idea scritta in un'esperienza visiva memorabile.</span> Mentre la sceneggiatura dà voce e struttura alla storia, la regia e la direzione della fotografia costruiscono l'impatto visivo, guidando gli attori e la troupe: una sinergia totale che nasce sul set e si perfeziona in fase di montaggio per valorizzare ogni singolo fotogramma.
             </p>
           </div>
           <CTAButton onClick={onBookClick} className="self-start" />
