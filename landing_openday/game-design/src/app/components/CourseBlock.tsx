@@ -74,10 +74,10 @@ export function CourseBlock({ onBookClick }: { onBookClick: () => void }) {
         <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
           <div className="flex flex-col gap-6">
             <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#b2ab38] leading-[1.1]">
-              Le Skill
+              Logica e creatività
             </h2>
             <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
-              Svilupperai un arsenale di skill indispensabili: dal <span className="font-bold">Graphic</span> e <span className="font-bold">Video Design</span> alla <span className="font-bold">Motion Graphic</span>, fino alla progettazione di interfacce <span className="font-bold">UX-UI</span>, <span className="font-bold">Art Direction e Copywriting</span>. Queste competenze ti apriranno le porte delle migliori agenzie <span className="font-bold">di comunicazione, web agency e aziende</span>, permettendoti di lanciare la tua carriera come <span className="font-bold">libero professionista</span> o di gestire i media digitali per brand di ogni livello.
+              <span className="font-bold">Durante il Triennio studierai l'architettura dei videogiochi e il Game Design puro, ma imparerai anche a muoverti su terreni tecnici ed emozionali come il Narrative Design e il Sound Design.</span> Dai laboratori di Visual Scripting su Unreal Engine, dove darai forma e codice alle tue idee, fino alle frontiere dell'Interaction Design per la Realtà Virtuale e Aumentata (VR/AR), acquisirai tutti gli strumenti per gestire ogni fase della pipeline di produzione contemporanea.
             </p>
           </div>
           <CTAButton onClick={onBookClick} className="self-start" />

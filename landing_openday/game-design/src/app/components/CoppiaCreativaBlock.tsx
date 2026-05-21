@@ -28,10 +28,10 @@ export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }
         <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
           <div className="flex flex-col gap-6">
             <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#b2ab38] leading-[1.1]">
-              Diventa un progettista della comunicazione
+              Il team di sviluppo
             </h2>
             <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
-              Il corso Triennale in <span className="font-bold">Game Design</span> è il percorso ideale per chi vuole trasformare la propria creatività in un metodo di lavoro solido. Non imparerai solo la tecnica, ma sarai in grado di <span className="font-bold">pianificare strategie digitali</span>, <span className="font-bold">di marketing</span> e <span className="font-bold">di comunicazione pubblicitaria</span>, acquisendo una visione d'insieme che ti permette di governare ogni fase di un progetto creativo.
+              <span className="font-bold">Game Designer, Programmatori e 3D Artist sono il motore di ogni studio di sviluppo. Insieme, trasformano un'idea astratta in un mondo interattivo tutto da esplorare.</span>Designer danno vita alle regole del gioco, alla storia e al coinvolgimento dell'utente, i modellatori e gli animatori costruiscono l'impatto visivo e l'atmosfera: una sinergia totale che nasce nei nostri laboratori per creare l'esperienza di gioco perfetta.
             </p>
           </div>
           <CTAButton onClick={onBookClick} className="self-start" />
