@@ -76,9 +76,13 @@ type Campus = {
   sessions?: Session[];
 };
 
-/** Solo sedi con almeno una data Open Day (sessions valorizzato e non vuoto) */
+const IS_ORIENTAMENTO = openDayConfig.is_orientamento === true;
+
+/** Open Day: solo sedi con sessioni attive. Orientamento: tutte le sedi configurate. */
 const CAMPUSES = (openDayConfig.campuses as Campus[]).filter(
-  (campus) => Array.isArray(campus.sessions) && campus.sessions.length > 0,
+  (campus) =>
+    IS_ORIENTAMENTO ||
+    (Array.isArray(campus.sessions) && campus.sessions.length > 0),
 );
 
 const IS_SINGLE_CAMPUS = CAMPUSES.length === 1;
@@ -86,9 +90,11 @@ const SINGLE_CAMPUS = IS_SINGLE_CAMPUS ? CAMPUSES[0] : undefined;
 const SINGLE_CAMPUS_SESSIONS = SINGLE_CAMPUS?.sessions ?? [];
 /** Una sede e più date: serve solo il select data (niente select sede) */
 const SHOW_DATE_ONLY_FOR_SINGLE_CAMPUS =
-  IS_SINGLE_CAMPUS && SINGLE_CAMPUS_SESSIONS.length > 1;
-/** Più sedi: select sede + data come prima */
-const SHOW_SEDE_AND_DATE_ROW = CAMPUSES.length > 1;
+  !IS_ORIENTAMENTO && IS_SINGLE_CAMPUS && SINGLE_CAMPUS_SESSIONS.length > 1;
+/** Più sedi: select sede (+ data in modalità Open Day) */
+const SHOW_SEDE_ROW = CAMPUSES.length > 1;
+const SHOW_SEDE_AND_DATE_ROW = !IS_ORIENTAMENTO && SHOW_SEDE_ROW;
+const SHOW_SEDE_ONLY_ROW = IS_ORIENTAMENTO && SHOW_SEDE_ROW;
 
 function initialHeroFormState() {
   const single = CAMPUSES.length === 1 ? CAMPUSES[0] : null;
@@ -228,7 +234,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
       return;
     }
 
-    if (!formData.openDayDate) {
+    if (!IS_ORIENTAMENTO && !formData.openDayDate) {
       setErrorMsg("Seleziona la data.");
       return;
     }
@@ -236,23 +242,27 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
     setStatus("loading");
     trackFormEvent("FormSubmitted", {
       campus: selectedCampus.apiValue,
-      open_day_date: formData.openDayDate,
+      ...(IS_ORIENTAMENTO ? {} : { open_day_date: formData.openDayDate }),
     });
 
     const base = import.meta.env.BASE_URL;
+    const submitPayload: Record<string, string> = {
+      first_name:    sanitizeInput(formData.nome),
+      last_name:     sanitizeInput(formData.cognome),
+      email:         sanitizeInput(formData.email),
+      phone_number:  sanitizeInput(formData.telefono),
+      how_you_knows: formData.comeConosciuto,
+      location:      selectedCampus.apiValue,
+    };
+    if (!IS_ORIENTAMENTO) {
+      submitPayload.open_day_date = formData.openDayDate;
+    }
+
     try {
       const res = await fetch(`${base}submit.php`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          first_name:    sanitizeInput(formData.nome),
-          last_name:     sanitizeInput(formData.cognome),
-          email:         sanitizeInput(formData.email),
-          phone_number:  sanitizeInput(formData.telefono),
-          how_you_knows: formData.comeConosciuto,
-          location:      selectedCampus.apiValue,
-          open_day_date: formData.openDayDate,
-        }),
+        body: JSON.stringify(submitPayload),
       });
 
       const raw = await res.text();
@@ -331,10 +341,24 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
               <div className="flex flex-col gap-6">
                 {CAMPUSES.length === 0 ? (
                   <p className={HERO_BODY_COPY_CLASS}>
-                    Non risultano sedi con date Open Day attive. In{" "}
-                    <span className="font-bold">openday-config.json</span> serve almeno una voce in{" "}
-                    <span className="font-bold">campuses</span> con{" "}
-                    <span className="font-bold">sessions</span> contenente almeno una data.
+                    {IS_ORIENTAMENTO ? (
+                      <>
+                        Non risultano sedi configurate. In{" "}
+                        <span className="font-bold">openday-config.json</span> serve almeno una voce in{" "}
+                        <span className="font-bold">campuses</span>.
+                      </>
+                    ) : (
+                      <>
+                        Non risultano sedi con date Open Day attive. In{" "}
+                        <span className="font-bold">openday-config.json</span> serve almeno una voce in{" "}
+                        <span className="font-bold">campuses</span> con{" "}
+                        <span className="font-bold">sessions</span> contenente almeno una data.
+                      </>
+                    )}
+                  </p>
+                ) : IS_ORIENTAMENTO ? (
+                  <p className={HERO_BODY_COPY_CLASS}>
+                    Compila il form e prenota il tuo orientamento personalizzato
                   </p>
                 ) : (
                   CAMPUSES.map((campus) => (
@@ -370,7 +394,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
 
         <div className="bg-[#8D9EBD] rounded-[24px] p-6 flex flex-col gap-3 w-full">
           <h2 className="font-tiempos text-[length:calc(40px-2pt)] md:text-[length:calc(52px-2pt)] xl:text-[length:calc(60px-2pt)] text-white leading-[1]">
-            Registrati
+            {IS_ORIENTAMENTO ? "Prenota" : "Registrati"}
           </h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -484,6 +508,32 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                       <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                         <ArrowDownIcon />
                       </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {SHOW_SEDE_ONLY_ROW && (
+                <div className="flex flex-col gap-[4px]">
+                  <label className="font-sarabun font-medium text-white text-[length:calc(18px-2pt)] leading-[2.5]">
+                    Sede *
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={formData.campusId}
+                      onChange={(e) => handleInputChange("campusId", e.target.value)}
+                      className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10"
+                      required
+                    >
+                      <option value="">Seleziona la sede</option>
+                      {CAMPUSES.map((campus) => (
+                        <option key={campus.id} value={campus.id}>
+                          {campus.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <ArrowDownIcon />
                     </div>
                   </div>
                 </div>

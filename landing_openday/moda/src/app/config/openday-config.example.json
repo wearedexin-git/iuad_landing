@@ -1,4 +1,5 @@
 {
+  "is_orientamento": false,
   "requestDescription": "Richiesta da Landing",
   "course": ["corso triennale di i livello in design della moda"],
   "origin": ["website", "landing", "openday"],

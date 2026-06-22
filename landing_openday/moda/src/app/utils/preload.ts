@@ -39,11 +39,12 @@ export function trackFormEvent(eventName: string, params?: Record<string, unknow
       ...params,
     });
   }
-  
-  // Google Analytics 4
+
+  /* gtag (disattivato – gestito via GTM-WC7LGZ4B)
   if (typeof window.gtag === 'function') {
     window.gtag('event', eventName, params);
   }
+  */
 }
 
 // Type declarations per gli analytics
