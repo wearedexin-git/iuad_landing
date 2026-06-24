@@ -75,6 +75,7 @@ $landingConfigPath = file_exists($landingConfigPathProd)
     : $landingConfigPathDev;
 $landingConfig = loadJsonConfig($landingConfigPath);
 $isOrientamento = !empty($landingConfig['is_orientamento']);
+$thankYouPage = 'grazie-per-aver-compilato-il-form.html';
 $campuses = $landingConfig['campuses'] ?? [];
 
 $campusesByApiValue = [];
@@ -511,5 +512,5 @@ echo json_encode([
         'user_sent' => $userMailSent,
         'academy_sent' => $academyMailSent,
     ],
-    'redirect'      => 'grazie.html?' . $redirectQuery,
+    'redirect'      => $thankYouPage . '?' . $redirectQuery,
 ]);

@@ -6,6 +6,7 @@ import {
   getValidationError 
 } from "../utils/validation";
 import { preloadThankYouPage, trackFormEvent } from "../utils/preload";
+import { THANK_YOU_PAGE } from "../config/thank-you-page";
 import openDayConfig from "../config/openday-config.json";
 
 function ArrowDownIcon() {
@@ -289,7 +290,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
           campus: selectedCampus.apiValue,
           open_day_date: formData.openDayDate,
         });
-        const redirectPath = (data.redirect ?? "grazie.html").replace(/^\//, "");
+        const redirectPath = (data.redirect ?? THANK_YOU_PAGE).replace(/^\//, "");
         window.location.href = base + redirectPath;
       } else {
         trackFormEvent("FormError", {

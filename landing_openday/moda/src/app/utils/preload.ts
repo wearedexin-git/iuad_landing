@@ -3,13 +3,15 @@
  * Questo migliora la percezione di velocità dopo il submit.
  */
 
+import { THANK_YOU_PAGE } from "../config/thank-you-page";
+
 let isPreloaded = false;
 
 export function preloadThankYouPage() {
   if (isPreloaded || typeof window === 'undefined') return;
   
   const base = import.meta.env.BASE_URL;
-  const thankYouUrl = `${base}grazie.html`;
+  const thankYouUrl = `${base}${THANK_YOU_PAGE}`;
   
   // Crea un link preload
   const link = document.createElement('link');
