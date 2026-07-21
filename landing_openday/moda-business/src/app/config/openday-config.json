@@ -2,8 +2,31 @@
   "requestDescription": "Richiesta da Landing",
   "course": ["corso triennale di i livello in design della moda indirizzo fashion business & management"],
   "courseMailLabel": "Design della Moda indirizzo Business & Management",
+  "is_orientamento": false,
   "origin": ["website", "landing", "openday"],
   "campuses": [
+    {
+      "id": "milano",
+      "label": "Milano",
+      "apiValue": "Milano",
+      "address": "Via Console Flaminio 19",
+      "sessions": [
+        {
+          "id": "milano-1",
+          "apiDateTime": "2026-09-08 16:00",
+          "label": "(inglese)"
+        },
+        {
+          "id": "milano-2",
+          "apiDateTime": "2026-09-10 16:00",
+          "label": "(online)"
+        },
+        {
+          "id": "milano-3",
+          "apiDateTime": "2026-09-12 11:00"
+        }
+      ]
+    },
     {
       "id": "napoli",
       "label": "Napoli",
@@ -12,7 +35,7 @@
       "sessions": [
         {
           "id": "napoli-1",
-          "apiDateTime": "2026-07-14 10:00"
+          "apiDateTime": "2026-09-08 10:00"
         }
       ]
     }
@@ -20,9 +43,14 @@
   "footer": {
     "contacts": [
       {
-        "title": "IUAD Napoli",
+        "title": "Accademia IUAD Napoli",
         "phone": "+39 081 554 0383",
         "email": "info@iuad.it"
+      },
+      {
+        "title": "Accademia IUAD Milano",
+        "phone": "+39 02 66703030",
+        "email": "milano@iuad.it"
       }
     ]
   }
