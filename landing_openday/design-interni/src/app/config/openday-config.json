@@ -1,8 +1,26 @@
 {
   "requestDescription": "Richiesta da Landing",
+  "is_orientamento": false,
   "course": ["design e architettura degli interni"],
   "origin": ["website", "landing", "openday"],
   "campuses": [
+    {
+      "id": "milano",
+      "label": "Milano",
+      "apiValue": "Milano",
+      "address": "Via Console Flaminio 19",
+      "sessions": [
+        {
+          "id": "milano-1",
+          "apiDateTime": "2026-09-12 11:00"
+        },
+        {
+          "id": "milano-2",
+          "apiDateTime": "2026-09-09 16:00",
+          "label": "(online)"
+        }
+      ]
+    },
     {
       "id": "napoli",
       "label": "Napoli",
@@ -11,7 +29,7 @@
       "sessions": [
         {
           "id": "napoli-1",
-          "apiDateTime": "2026-07-16 10:00"
+          "apiDateTime": "2026-09-10 10:00"
         }
       ]
     }
@@ -21,7 +39,12 @@
       {
         "title": "Accademia IUAD Napoli",
         "phone": "+39 081 554 0383",
-        "email": "info@accademiamoda.it"
+        "email": "info@iuad.it"
+      },
+      {
+        "title": "Accademia IUAD Milano",
+        "phone": "+39 02 66703030",
+        "email": "milano@iuad.it"
       }
     ]
   }

@@ -9,7 +9,7 @@ export function preloadThankYouPage() {
   if (isPreloaded || typeof window === 'undefined') return;
   
   const base = import.meta.env.BASE_URL;
-  const thankYouUrl = `${base}grazie.html`;
+  const thankYouUrl = `${base}grazie-per-aver-compilato-il-form.html`;
   
   // Crea un link preload
   const link = document.createElement('link');

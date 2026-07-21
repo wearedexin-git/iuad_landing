@@ -74,10 +74,15 @@ export function CourseBlock({ onBookClick }: { onBookClick: () => void }) {
         <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
           <div className="flex flex-col gap-6">
             <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#719E85] leading-[1.1]">
-              Le Skill
+              Software avanzati e nuove opportunità di carriera.
             </h2>
             <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
-              Svilupperai un arsenale di skill indispensabili: dal <span className="font-bold">Graphic</span> e <span className="font-bold">Video Design</span> alla <span className="font-bold">Motion Graphic</span>, fino alla progettazione di interfacce <span className="font-bold">UX-UI</span>, <span className="font-bold">Art Direction e Copywriting</span>. Queste competenze ti apriranno le porte delle migliori agenzie <span className="font-bold">di comunicazione, web agency e aziende</span>, permettendoti di lanciare la tua carriera come <span className="font-bold">libero professionista</span> o di gestire i media digitali per brand di ogni livello.
+              Nei tre anni imparerai a gestire ogni fase tecnica utilizzando i più avanzati{" "}
+              <span className="font-bold">software 2D e 3D</span>, tecniche di{" "}
+              <span className="font-bold">animazione e rendering</span>. Al termine del percorso, sarai pronto per inserirti in{" "}
+              <span className="font-bold">studi di progettazione</span>, società di allestimento o imprese orientate al{" "}
+              <span className="font-bold">visual merchandising e ai punti vendita</span>. Avrai tutte le skill necessarie per trasformare una{" "}
+              <span className="font-bold">planimetria in una realtà concreta</span>.
             </p>
           </div>
           <CTAButton onClick={onBookClick} className="self-start" />

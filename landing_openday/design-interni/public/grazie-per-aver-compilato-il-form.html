@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="it">
 <head>
+ <!-- Iubenda (disattivato)
   <script type="text/javascript">
     var _iub = _iub || [];
     _iub.csConfiguration = {"siteId":3719206,"cookiePolicyId":68761295,"lang":"it"};
@@ -8,14 +9,15 @@
   <script type="text/javascript" src="https://cs.iubenda.com/autoblocking/3719206.js"></script>
   <script type="text/javascript" src="//cdn.iubenda.com/cs/gpp/stub.js"></script>
   <script type="text/javascript" src="//cdn.iubenda.com/cs/iubenda_cs.js" charset="UTF-8" async></script>
+  -->
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-TG4VGWW');</script>
+    })(window,document,'script','dataLayer','GTM-WC7LGZ4B');</script>
     <!-- End Google Tag Manager -->
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) - disattivato
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1001604186"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -23,6 +25,7 @@
       gtag('js', new Date());
       gtag('config', 'AW-1001604186');
     </script>
+    -->
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
@@ -130,6 +133,13 @@
   </style>
 </head>
 <body>
+ <!-- Google Tag Manager (noscript) -->
+ <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WC7LGZ4B"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=200101197259749&ev=PageView&noscript=1"
+  /></noscript>
 
   <div class="card">
 
@@ -139,13 +149,13 @@
       alt="IUAD Accademia di Moda e Design"
     />
 
-    <h1>Iscrizione confermata!</h1>
+    <h1 id="page-title">Iscrizione confermata!</h1>
 
-    <p>Grazie per aver completato la registrazione all'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l'ora di incontrarti!</p>
+    <p id="intro-message">Grazie per aver completato la registrazione all'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l'ora di incontrarti!</p>
 
     <p><strong>Corso:</strong> Design e Architettura degli Interni</p>
     <p><strong>Sede:</strong> <span id="selected-sede">-</span></p>
-    <p><strong>Data Open Day:</strong> <span id="selected-data">-</span></p>
+    <p id="date-row"><strong>Data Open Day:</strong> <span id="selected-data">-</span></p>
 
     <a class="back-btn" href="index.html">Torna alla pagina</a>
 
@@ -156,36 +166,66 @@
   (function () {
     const params = new URLSearchParams(window.location.search);
     const sede = params.get('sede') || 'Milano';
-    const data = params.get('data') || '-';
+    const data = params.get('data') || '';
+    const tipo = params.get('tipo') || 'Open Day';
+    const isOrientamento = tipo.toLowerCase() === 'orientamento';
 
+    const pageTitle = document.getElementById('page-title');
+    const introMessage = document.getElementById('intro-message');
+    const dateRow = document.getElementById('date-row');
     const sedeNode = document.getElementById('selected-sede');
     const dataNode = document.getElementById('selected-data');
-    if (sedeNode) sedeNode.textContent = sede;
-    if (dataNode) dataNode.textContent = data;
 
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'Lead', {
-        content_name: 'Landing - Design e Architettura degli Interni',
-        sede: sede,
-        open_day_date: data
-      });
+    if (pageTitle) {
+      pageTitle.textContent = isOrientamento ? 'Prenotazione confermata!' : 'Iscrizione confermata!';
     }
 
+    if (introMessage) {
+      introMessage.innerHTML = isOrientamento
+        ? 'Grazie per aver prenotato il tuo <strong>orientamento personalizzato</strong> presso IUAD. Ti abbiamo inviato una mail di conferma.<br>Ti contatteremo presto per organizzare l\'incontro.'
+        : 'Grazie per aver completato la registrazione all\'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l\'ora di incontrarti!';
+    }
+
+    if (sedeNode) sedeNode.textContent = sede;
+
+    if (isOrientamento) {
+      if (dateRow) dateRow.style.display = 'none';
+    } else if (dataNode) {
+      dataNode.textContent = data || '-';
+    }
+
+    document.title = isOrientamento
+      ? 'Prenotazione confermata – Orientamento Design e Architettura degli Interni | IUAD'
+      : 'Iscrizione confermata – Open Day Design e Architettura degli Interni | IUAD';
+
+    const trackingPayload = {
+      content_name: 'Landing - Design e Architettura degli Interni',
+      sede: sede,
+      tipo_richiesta: tipo,
+    };
+
+    if (!isOrientamento && data) {
+      trackingPayload.open_day_date = data;
+    }
+
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'Lead', trackingPayload);
+    }
+    /*Google Ads (gtag) - disattivato
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'conversion', {
         send_to: 'AW-1001604186/uFRTCIf4hoMcENqIzd0D',
         value: 1.0,
         currency: 'EUR',
-        sede: sede,
-        open_day_date: data
+        ...trackingPayload,
       });
     }
+    */
 
     if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push({
-        event: 'thankyou_open_day',
-        sede: sede,
-        open_day_date: data
+        event: isOrientamento ? 'thankyou_orientamento' : 'thankyou_open_day',
+        ...trackingPayload,
       });
     }
   })();

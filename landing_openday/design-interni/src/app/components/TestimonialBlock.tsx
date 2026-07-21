@@ -36,22 +36,22 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: "Marco",
-    role: "Studente Design e Architettura degli Interni",
+    name: "Sofia",
+    role: "Ex studentessa",
     quote:
-      "Fin dai primi progetti abbiamo lavorato su casi reali: identità visive, impaginazione, contenuti digitali e presentazioni pensate come nel lavoro vero. La cosa che mi è servita di più è stata imparare a ragionare sui progetti, non solo a usare i programmi.",
+      "Al primo colloquio mi hanno chiesto come avrei gestito un open space di 80mq con budget limitato. Ho spiegato le scelte su zonizzazione, illuminazione e materiali basandomi su un progetto simile fatto al secondo anno. Saper parlare di normative, ergonomia e software di progettazione mi ha fatto ottenere il lavoro.",
+  },
+  {
+    name: "Matteo",
+    role: "Studente",
+    quote:
+      "All'inizio copiavo progetti che trovavo online. Qui ho capito che ogni spazio ha una sua storia e un suo scopo. I docenti ti spingono a ragionare: perché questa disposizione? Perché questi materiali? Ho rifatto lo stesso appartamento quattro volte, ma ora ho un progetto che sento davvero mio e che è il punto forte del mio portfolio.",
   },
   {
     name: "Elena",
-    role: "Junior Graphic Designer",
+    role: "Ex studentessa",
     quote:
-      "La parte più utile per me è stata costruire un portfolio progetto dopo progetto. Non fai esercizi fini a se stessi: ti confronti con brief, revisioni e scelte da motivare. Questo mi ha aiutata a capire meglio in cosa sono più forte e a sentirmi più pronta per lavorare in studio o in agenzia.",
-  },
-  {
-    name: "Luca",
-    role: "Studente",
-    quote:
-      "Quello che ho apprezzato di più è che il corso ti obbliga a metterti in gioco davvero. Lavori in modo trasversale tra grafica, contenuti, interfacce e presentazione delle idee, quindi impari a essere più versatile. Alla fine non esci solo con nozioni, ma con un metodo e con lavori concreti da mostrare.",
+      "La formazione completa è stata fondamentale. So usare AutoCAD, SketchUp e software di rendering come un professionista. Quando entro in uno studio o da un cliente, presento subito render fotorealistici. Questo mi ha permesso di lavorare come freelance: gestisco progetti dall'inizio alla fine, dal rilievo alla presentazione finale.",
   },
 ];
 

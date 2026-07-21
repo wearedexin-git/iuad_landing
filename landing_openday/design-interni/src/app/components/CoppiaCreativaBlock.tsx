@@ -28,10 +28,13 @@ export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }
         <div className="flex flex-col gap-8 md:gap-10 max-w-[670px]">
           <div className="flex flex-col gap-6">
             <h2 className="font-tiempos text-[36px] md:text-[48px] lg:text-[58px] text-[#719E85] leading-[1.1]">
-              Diventa un progettista della comunicazione
+            Il punto d'incontro tra funzione ed estetica.
             </h2>
             <p className="font-sarabun font-light text-[20px] md:text-[24px] lg:text-[28px] text-[#201f1f] leading-[1.4]">
-              Il corso Triennale in <span className="font-bold">Design e Architettura degli Interni</span> è il percorso ideale per chi vuole trasformare la propria creatività in un metodo di lavoro solido. Non imparerai solo la tecnica, ma sarai in grado di <span className="font-bold">pianificare strategie digitali</span>, <span className="font-bold">di marketing</span> e <span className="font-bold">di comunicazione pubblicitaria</span>, acquisendo una visione d'insieme che ti permette di governare ogni fase di un progetto creativo.
+              Il corso Triennale in Design e Architettura degli Interni è la scelta giusta se desideri progettare spazi privati o commerciali. Partendo dalle basi del disegno architettonico, imparerai a unire l'estetica alla funzionalità: saprai{" "}
+              <span className="font-bold">leggere i bisogni dei clienti e della comunità</span> per realizzare{" "}
+              <span className="font-bold">progetti e oggetti di design</span> capaci di{" "}
+              <span className="font-bold">migliorare la vita quotidiana</span>.
             </p>
           </div>
           <CTAButton onClick={onBookClick} className="self-start" />
