@@ -65,6 +65,8 @@ type FormStatus = "idle" | "loading" | "error";
 type Session = {
   id: string;
   apiDateTime: string;
+  /** Testo opzionale stampato dopo la data, es. "inglese" → "…, ore 10:00 (inglese)" */
+  label?: string;
 };
 
 type Campus = {
@@ -76,9 +78,13 @@ type Campus = {
   sessions?: Session[];
 };
 
-/** Solo sedi con almeno una data Open Day (sessions valorizzato e non vuoto) */
-const CAMPUSES = (openDayConfig.campuses as Campus[]).filter(
-  (campus) => Array.isArray(campus.sessions) && campus.sessions.length > 0,
+const IS_ORIENTAMENTO = openDayConfig.is_orientamento === true;
+
+/** Sedi attive: in orientamento tutte le voci in config; altrimenti solo quelle con date Open Day */
+const CAMPUSES = (openDayConfig.campuses as Campus[]).filter((campus) =>
+  IS_ORIENTAMENTO
+    ? true
+    : Array.isArray(campus.sessions) && campus.sessions.length > 0,
 );
 
 const IS_SINGLE_CAMPUS = CAMPUSES.length === 1;
@@ -87,8 +93,14 @@ const SINGLE_CAMPUS_SESSIONS = SINGLE_CAMPUS?.sessions ?? [];
 /** Una sede e più date: serve solo il select data (niente select sede) */
 const SHOW_DATE_ONLY_FOR_SINGLE_CAMPUS =
   IS_SINGLE_CAMPUS && SINGLE_CAMPUS_SESSIONS.length > 1;
-/** Più sedi: select sede + data come prima */
+/** Più sedi: select sede (+ data se non orientamento) */
 const SHOW_SEDE_AND_DATE_ROW = CAMPUSES.length > 1;
+/** In orientamento, con più sedi: solo select sede */
+const SHOW_CAMPUS_SELECT_ONLY = IS_ORIENTAMENTO && SHOW_SEDE_AND_DATE_ROW;
+/** Select data: solo modalità Open Day */
+const SHOW_DATE_SELECT =
+  !IS_ORIENTAMENTO &&
+  (SHOW_SEDE_AND_DATE_ROW || SHOW_DATE_ONLY_FOR_SINGLE_CAMPUS);
 
 function initialHeroFormState() {
   const single = CAMPUSES.length === 1 ? CAMPUSES[0] : null;
@@ -121,6 +133,12 @@ function formatItalianDateTime(value: string) {
   })
     .format(parsed)
     .replace(/\s+alle\s+(?:ore\s+)?/i, ", ore ");
+}
+
+function formatSessionDisplay(session: Session) {
+  const dateLabel = formatItalianDateTime(session.apiDateTime);
+  const extra = (session.label ?? "").trim();
+  return extra ? `${dateLabel} (${extra})` : dateLabel;
 }
 
 function getCampusDisplayLocation(campus: Campus) {
@@ -158,8 +176,10 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
     }
   }, [hasInteracted]);
 
-  // Pre-seleziona la data se la sede scelta ha una sola sessione
+  // Pre-seleziona la data se la sede scelta ha una sola sessione (solo Open Day)
   useEffect(() => {
+    if (IS_ORIENTAMENTO) return;
+
     if (availableSessions.length === 1) {
       const onlySession = availableSessions[0].apiDateTime;
       if (formData.openDayDate !== onlySession) {
@@ -228,7 +248,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
       return;
     }
 
-    if (!formData.openDayDate) {
+    if (!IS_ORIENTAMENTO && !formData.openDayDate) {
       setErrorMsg("Seleziona la data.");
       return;
     }
@@ -236,7 +256,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
     setStatus("loading");
     trackFormEvent("FormSubmitted", {
       campus: selectedCampus.apiValue,
-      open_day_date: formData.openDayDate,
+      ...(IS_ORIENTAMENTO ? {} : { open_day_date: formData.openDayDate }),
     });
 
     const base = import.meta.env.BASE_URL;
@@ -251,7 +271,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
           phone_number:  sanitizeInput(formData.telefono),
           how_you_knows: formData.comeConosciuto,
           location:      selectedCampus.apiValue,
-          open_day_date: formData.openDayDate,
+          ...(IS_ORIENTAMENTO ? {} : { open_day_date: formData.openDayDate }),
         }),
       });
 
@@ -279,7 +299,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
           campus: selectedCampus.apiValue,
           open_day_date: formData.openDayDate,
         });
-        const redirectPath = (data.redirect ?? "grazie.html").replace(/^\//, "");
+        const redirectPath = (data.redirect ?? "grazie-per-aver-compilato-il-form.html").replace(/^\//, "");
         window.location.href = base + redirectPath;
       } else {
         trackFormEvent("FormError", {
@@ -324,7 +344,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
             <div className="flex flex-col gap-4 items-start w-full">
               <p className={HERO_BODY_COPY_CLASS}>
                 Vieni a scoprire il nostro{" "}
-                <span className="font-bold">Corso Triennale di I Livello</span>, parla
+                <span className="font-bold">Master</span>, parla
                 con gli <span className="font-bold">studenti</span> e conosci i
                 nostri <span className="font-bold">professionisti.</span>
               </p>
@@ -332,10 +352,19 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
               <div className="flex flex-col gap-6">
                 {CAMPUSES.length === 0 ? (
                   <p className={HERO_BODY_COPY_CLASS}>
-                    Non risultano sedi con date Open Day attive. In{" "}
+                    Non risultano sedi configurate. In{" "}
                     <span className="font-bold">openday-config.json</span> serve almeno una voce in{" "}
-                    <span className="font-bold">campuses</span> con{" "}
-                    <span className="font-bold">sessions</span> contenente almeno una data.
+                    <span className="font-bold">campuses</span>
+                    {!IS_ORIENTAMENTO && (
+                      <>
+                        {" "}con <span className="font-bold">sessions</span> contenente almeno una data
+                      </>
+                    )}
+                    .
+                  </p>
+                ) : IS_ORIENTAMENTO ? (
+                  <p className={HERO_BODY_COPY_CLASS}>
+                    Compila il form e prenota il tuo orientamento personalizzato
                   </p>
                 ) : (
                   CAMPUSES.map((campus) => (
@@ -348,7 +377,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                       </span>
                       <div className={HERO_BODY_COPY_CLASS}>
                         {(campus.sessions ?? []).map((session) => (
-                          <p key={session.id}>{formatItalianDateTime(session.apiDateTime)}</p>
+                          <p key={session.id}>{formatSessionDisplay(session)}</p>
                         ))}
                       </div>
                     </div>
@@ -371,7 +400,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
 
         <div className="bg-[#8D9EBD] rounded-[24px] p-6 flex flex-col gap-3 w-full">
           <h2 className="font-tiempos text-[length:calc(40px-2pt)] md:text-[length:calc(52px-2pt)] xl:text-[length:calc(60px-2pt)] text-white leading-[1]">
-            Registrati
+            {IS_ORIENTAMENTO ? "Prenota" : "Registrati"}
           </h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -437,8 +466,34 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                 </div>
               </div>
 
-              {/* Sede + Data: solo se ci sono più sedi; una sede + più date: solo Data */}
-              {SHOW_SEDE_AND_DATE_ROW && (
+              {/* Sede + Data: solo modalità Open Day; in orientamento solo sede se più campus */}
+              {SHOW_CAMPUS_SELECT_ONLY && (
+                <div className="flex flex-col gap-[4px]">
+                  <label className="font-sarabun font-medium text-white text-[length:calc(18px-2pt)] leading-[2.5]">
+                    Sede *
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={formData.campusId}
+                      onChange={(e) => handleInputChange("campusId", e.target.value)}
+                      className="bg-[#fbfbfb] border border-white rounded-full px-4 py-3 font-sarabun font-light text-[length:calc(14px-2pt)] text-[#444] outline-none focus:ring-2 focus:ring-white/50 transition-all w-full appearance-none pr-10"
+                      required
+                    >
+                      <option value="">Seleziona la sede</option>
+                      {CAMPUSES.map((campus) => (
+                        <option key={campus.id} value={campus.id}>
+                          {campus.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <ArrowDownIcon />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {SHOW_SEDE_AND_DATE_ROW && !IS_ORIENTAMENTO && (
                 <div className="flex flex-col gap-4 md:flex-row md:gap-4">
                   <div className="flex-1 flex flex-col gap-[4px] min-w-0">
                     <label className="font-sarabun font-medium text-white text-[length:calc(18px-2pt)] leading-[2.5]">
@@ -478,7 +533,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                         <option value="">Seleziona Giorno</option>
                         {availableSessions.map((session) => (
                           <option key={session.id} value={session.apiDateTime}>
-                            {formatItalianDateTime(session.apiDateTime)}
+                            {formatSessionDisplay(session)}
                           </option>
                         ))}
                       </select>
@@ -490,7 +545,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                 </div>
               )}
 
-              {SHOW_DATE_ONLY_FOR_SINGLE_CAMPUS && (
+              {SHOW_DATE_ONLY_FOR_SINGLE_CAMPUS && SHOW_DATE_SELECT && (
                 <div className="flex flex-col gap-[4px]">
                   <label className="font-sarabun font-medium text-white text-[length:calc(18px-2pt)] leading-[2.5]">
                     Data *
@@ -505,7 +560,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                       <option value="">Seleziona Giorno</option>
                       {SINGLE_CAMPUS_SESSIONS.map((session) => (
                         <option key={session.id} value={session.apiDateTime}>
-                          {formatItalianDateTime(session.apiDateTime)}
+                          {formatSessionDisplay(session)}
                         </option>
                       ))}
                     </select>

@@ -1,5 +1,6 @@
 {
   "requestDescription": "Richiesta da Landing",
+  "is_orientamento": false,
   "course": ["disegno tecnico per la moda"],
   "courseMailLabel": "Disegno Tecnico per la Moda 2D/3D",
   "origin": ["website", "landing", "openday"],
@@ -12,7 +13,7 @@
       "sessions": [
         {
           "id": "napoli-1",
-          "apiDateTime": "2026-07-14 10:00"
+          "apiDateTime": "2026-09-08 10:00"
         }
       ]
     }
@@ -20,7 +21,7 @@
   "footer": {
     "contacts": [
       {
-        "title": "IUAD Napoli",
+        "title": "Accademia IUAD Napoli",
         "phone": "+39 081 554 0383",
         "email": "info@iuad.it"
       }

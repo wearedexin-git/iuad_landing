@@ -38,7 +38,7 @@ function copyDeployAssets() {
   }
 }
 
-// In dev serve il logo da `src/assets` per `grazie.html` e `submit.php`.
+// In dev serve il logo da `src/assets` per la thank-you page e `submit.php`.
 function serveLogoInDev() {
   return {
     name: 'serve-logo-in-dev',
@@ -63,7 +63,7 @@ function serveLogoInDev() {
 export default defineConfig(({ command }) => ({
   // In dev (`vite`) usa '/' per servire dalla root locale.
   // In build (`vite build`) usa il path di produzione sotto cui la landing è pubblicata.
-  base: command === 'build' ? '/landing/design-moda-business/' : '/',
+  base: command === 'build' ? '/landing/master-disegno-tecnico-2d-3d/' : '/',
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
@@ -134,10 +134,10 @@ export default defineConfig(({ command }) => ({
         target: 'http://localhost:8888',
         changeOrigin: true,
       },
-      '/landing/design-moda-business/submit.php': {
+      '/landing/master-disegno-tecnico-2d-3d/submit.php': {
         target: 'http://localhost:8888',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/landing\/design-moda-business/, ''),
+        rewrite: (path) => path.replace(/^\/landing\/master-disegno-tecnico-2d-3d/, ''),
       },
     },
   },

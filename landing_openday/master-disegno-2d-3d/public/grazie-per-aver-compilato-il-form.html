@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <!-- Iubenda (disattivato)
   <script type="text/javascript">
     var _iub = _iub || [];
     _iub.csConfiguration = {"siteId":3719206,"cookiePolicyId":68761295,"lang":"it"};
@@ -8,21 +9,30 @@
   <script type="text/javascript" src="https://cs.iubenda.com/autoblocking/3719206.js"></script>
   <script type="text/javascript" src="//cdn.iubenda.com/cs/gpp/stub.js"></script>
   <script type="text/javascript" src="//cdn.iubenda.com/cs/iubenda_cs.js" charset="UTF-8" async></script>
+  -->
   <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WC7LGZ4B');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Google Tag Manager (disattivato: GTM-TG4VGWW)
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-TG4VGWW');</script>
-    <!-- End Google Tag Manager -->
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1001604186"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-1001604186');
-    </script>
+  -->
+  <!-- Google tag gtag.js (disattivato: AW-1001604186)
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1001604186"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-1001604186');
+  </script>
+  -->
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
@@ -130,6 +140,13 @@
   </style>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WC7LGZ4B"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=200101197259749&ev=PageView&noscript=1"
+  /></noscript>
 
   <div class="card">
 
@@ -139,13 +156,13 @@
       alt="IUAD Accademia di Moda e Design"
     />
 
-    <h1>Iscrizione confermata!</h1>
+    <h1 id="page-title">Iscrizione confermata!</h1>
 
-    <p>Grazie per aver completato la registrazione all'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l'ora di incontrarti!</p>
+    <p id="page-intro">Grazie per aver completato la registrazione all'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l'ora di incontrarti!</p>
 
     <p><strong>Corso:</strong> Disegno Tecnico per la Moda 2D/3D</p>
     <p><strong>Sede:</strong> <span id="selected-sede">-</span></p>
-    <p><strong>Data Open Day:</strong> <span id="selected-data">-</span></p>
+    <p id="open-day-date-row"><strong>Data Open Day:</strong> <span id="selected-data">-</span></p>
 
     <a class="back-btn" href="index.html">Torna alla pagina</a>
 
@@ -157,9 +174,34 @@
     const params = new URLSearchParams(window.location.search);
     const sede = params.get('sede') || 'Napoli';
     const data = params.get('data') || '-';
+    const isOrientamento = params.get('orientamento') === '1';
 
+    document.title = isOrientamento
+      ? 'Prenotazione orientamento confermata – Disegno Tecnico per la Moda 2D/3D | IUAD'
+      : 'Iscrizione confermata – Disegno Tecnico per la Moda 2D/3D | IUAD';
+
+    const titleNode = document.getElementById('page-title');
+    const introNode = document.getElementById('page-intro');
+    const dateRowNode = document.getElementById('open-day-date-row');
     const sedeNode = document.getElementById('selected-sede');
     const dataNode = document.getElementById('selected-data');
+
+    if (titleNode) {
+      titleNode.textContent = isOrientamento
+        ? 'Prenotazione confermata!'
+        : 'Iscrizione confermata!';
+    }
+
+    if (introNode) {
+      introNode.innerHTML = isOrientamento
+        ? 'Grazie per aver prenotato il tuo <strong>orientamento personalizzato</strong> con IUAD. Ti abbiamo inviato una mail di conferma.<br>Ti contatteremo presto per organizzare l\'incontro!'
+        : 'Grazie per aver completato la registrazione all\'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l\'ora di incontrarti!';
+    }
+
+    if (dateRowNode) {
+      dateRowNode.style.display = isOrientamento ? 'none' : '';
+    }
+
     if (sedeNode) sedeNode.textContent = sede;
     if (dataNode) dataNode.textContent = data;
 
@@ -167,25 +209,27 @@
       window.fbq('track', 'Lead', {
         content_name: 'Landing - Disegno Tecnico per la Moda 2D/3D',
         sede: sede,
-        open_day_date: data
+        ...(isOrientamento ? { tipo: 'orientamento' } : { open_day_date: data })
       });
     }
 
+    /* Google tag gtag.js (disattivato: AW-1001604186)
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'conversion', {
         send_to: 'AW-1001604186/uFRTCIf4hoMcENqIzd0D',
         value: 1.0,
         currency: 'EUR',
         sede: sede,
-        open_day_date: data
+        ...(isOrientamento ? { tipo: 'orientamento' } : { open_day_date: data })
       });
     }
+    */
 
     if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push({
-        event: 'thankyou_open_day',
+        event: isOrientamento ? 'thankyou_orientamento' : 'thankyou_open_day',
         sede: sede,
-        open_day_date: data
+        ...(isOrientamento ? { tipo: 'orientamento' } : { open_day_date: data })
       });
     }
   })();
