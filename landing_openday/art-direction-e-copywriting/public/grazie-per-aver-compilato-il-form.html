@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <!-- Iubenda (disattivato)
   <script type="text/javascript">
     var _iub = _iub || [];
     _iub.csConfiguration = {"siteId":3719206,"cookiePolicyId":68761295,"lang":"it"};
@@ -8,39 +9,53 @@
   <script type="text/javascript" src="https://cs.iubenda.com/autoblocking/3719206.js"></script>
   <script type="text/javascript" src="//cdn.iubenda.com/cs/gpp/stub.js"></script>
   <script type="text/javascript" src="//cdn.iubenda.com/cs/iubenda_cs.js" charset="UTF-8" async></script>
-  <!-- Google Tag Manager -->
+  -->
+
+  <!-- Google Tag Manager (disattivato: GTM-TG4VGWW)
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-TG4VGWW');</script>
-    <!-- End Google Tag Manager -->
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1001604186"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-1001604186');
-    </script>
-    <!-- Facebook Pixel Code -->
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      
-      fbq('init', '200101197259749');
-      fbq('track', 'PageView');
-    </script>
-    <!-- End Facebook Pixel Code -->
+  -->
+
+  <!-- Google tag gtag.js (disattivato: AW-1001604186)
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1001604186"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-1001604186');
+  </script>
+  -->
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    fbq('init', '200101197259749');
+    fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WC7LGZ4B');</script>
+  <!-- End Google Tag Manager -->
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Iscrizione confermata – Design della Comunicazione | IUAD</title>
+  <title>Iscrizione confermata – Art Direction & Copywriting | IUAD</title>
   <style>
     @font-face {
       font-family: 'Tiempos Headline';
@@ -131,21 +146,26 @@
 </head>
 <body>
 
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WC7LGZ4B"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
   <div class="card">
 
     <img
       class="logo"
-      src="https://www.accademiamoda.it/wp-content/uploads/2022/05/IUAD-logo-nero-2022.png"
+      src="assets/logo_iuad_black.png"
       alt="IUAD Accademia di Moda e Design"
     />
 
     <h1>Iscrizione confermata!</h1>
 
-    <p>Grazie per aver completato la registrazione all'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l'ora di incontrarti!</p>
+    <p id="thankyou-intro">Grazie per aver completato la registrazione all'<strong>Open Day</strong> di IUAD. Ti abbiamo inviato una mail di conferma.<br>Non vediamo l'ora di incontrarti!</p>
 
-    <p><strong>Corso:</strong> Design della Comunicazione</p>
+    <p><strong>Corso:</strong> Art Direction & Copywriting</p>
     <p><strong>Sede:</strong> <span id="selected-sede">-</span></p>
-    <p><strong>Data Open Day:</strong> <span id="selected-data">-</span></p>
+    <p id="open-day-date-row"><strong>Data Open Day:</strong> <span id="selected-data">-</span></p>
 
     <a class="back-btn" href="index.html">Torna alla pagina</a>
 
@@ -157,20 +177,34 @@
     const params = new URLSearchParams(window.location.search);
     const sede = params.get('sede') || 'Milano';
     const data = params.get('data') || '-';
+    const tipo = params.get('tipo') || 'openday';
+    const isOrientamento = tipo === 'orientamento';
 
     const sedeNode = document.getElementById('selected-sede');
     const dataNode = document.getElementById('selected-data');
+    const introNode = document.getElementById('thankyou-intro');
+    const dateRow = document.getElementById('open-day-date-row');
     if (sedeNode) sedeNode.textContent = sede;
     if (dataNode) dataNode.textContent = data;
+    if (isOrientamento) {
+      document.title = 'Prenotazione confermata – Art Direction & Copywriting | IUAD';
+      const heading = document.querySelector('h1');
+      if (heading) heading.textContent = 'Prenotazione confermata!';
+      if (introNode) {
+        introNode.innerHTML = 'Grazie per aver prenotato il tuo <strong>orientamento personalizzato</strong> presso IUAD. Ti abbiamo inviato una mail di conferma.<br>Ti contatteremo presto per i dettagli.';
+      }
+      if (dateRow) dateRow.style.display = 'none';
+    }
 
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'Lead', {
-        content_name: 'Landing - Design della Comunicazione',
+        content_name: 'Landing - Art Direction & Copywriting',
         sede: sede,
         open_day_date: data
       });
     }
 
+    /*
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'conversion', {
         send_to: 'AW-1001604186/uFRTCIf4hoMcENqIzd0D',
@@ -180,6 +214,7 @@
         open_day_date: data
       });
     }
+    */
 
     if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push({

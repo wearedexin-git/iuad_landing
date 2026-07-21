@@ -31,7 +31,7 @@ function copyOpendayConfig() {
 export default defineConfig(({ command }) => ({
   // In dev (`vite`) usa '/' per servire dalla root locale.
   // In build (`vite build`) usa il path di produzione sotto cui la landing è pubblicata.
-  base: command === 'build' ? '/landing/art-direction-e-copywriting/' : '/',
+  base: command === 'build' ? '/landing/art-direction-e-copywriting-b/' : '/',
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them

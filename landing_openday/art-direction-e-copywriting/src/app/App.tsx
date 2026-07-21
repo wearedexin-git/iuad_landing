@@ -6,6 +6,7 @@ import { TextBlock } from "./components/TextBlock";
 import { CoppiaCreativaBlock } from "./components/CoppiaCreativaBlock";
 import { CourseBlock } from "./components/CourseBlock";
 import { CarouselBlock } from "./components/CarouselBlock";
+import { AgevolazioniBlock } from "./components/AgevolazioniBlock";
 import { PlusBlock } from "./components/PlusBlock";
 import { TestimonialBlock } from "./components/TestimonialBlock";
 import { Footer } from "./components/Footer";
@@ -27,6 +28,7 @@ export default function App() {
           <TextBlock onBookClick={scrollToForm} />
           <CoppiaCreativaBlock onBookClick={scrollToForm} />
           <CourseBlock onBookClick={scrollToForm} />
+          <AgevolazioniBlock onBookClick={scrollToForm} />
           <CarouselBlock onBookClick={scrollToForm} />
           <PlusBlock onBookClick={scrollToForm} />
           <TestimonialBlock onBookClick={scrollToForm} />

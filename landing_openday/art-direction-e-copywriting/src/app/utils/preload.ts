@@ -9,7 +9,7 @@ export function preloadThankYouPage() {
   if (isPreloaded || typeof window === 'undefined') return;
   
   const base = import.meta.env.BASE_URL;
-  const thankYouUrl = `${base}grazie.html`;
+  const thankYouUrl = `${base}grazie-per-aver-compilato-il-form.html`;
   
   // Crea un link preload
   const link = document.createElement('link');
@@ -26,12 +26,12 @@ export function preloadThankYouPage() {
  */
 export function trackFormEvent(eventName: string, params?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
-  
+
   // Meta Pixel
   if (typeof window.fbq === 'function') {
     window.fbq('track', eventName, params);
   }
-  
+
   // Google Tag Manager
   if (typeof window.dataLayer !== 'undefined') {
     window.dataLayer.push({
@@ -39,18 +39,17 @@ export function trackFormEvent(eventName: string, params?: Record<string, unknow
       ...params,
     });
   }
-  
-  // Google Analytics 4
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', eventName, params);
-  }
+
+  // Google tag gtag.js (disattivato)
+  // if (typeof window.gtag === 'function') {
+  //   window.gtag('event', eventName, params);
+  // }
 }
 
-// Type declarations per gli analytics
 declare global {
   interface Window {
     fbq?: (action: string, event: string, params?: Record<string, unknown>) => void;
     dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
+    // gtag?: (...args: unknown[]) => void;
   }
 }

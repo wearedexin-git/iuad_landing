@@ -1,7 +1,0 @@
-{
-  "name": "iuad-landing-root",
-  "private": true,
-  "workspaces": [
-    "landing_openday/comunicazione"
-  ]
-}

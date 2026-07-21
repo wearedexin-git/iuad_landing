@@ -291,7 +291,7 @@ export function TestimonialBlock({ onBookClick }: { onBookClick: () => void }) {
       <section
         id="testimonial"
         ref={mobileSectionRef as React.RefObject<HTMLElement>}
-        className="relative bg-[#f4dbcc] py-16 overflow-hidden"
+        className="relative bg-white py-16 overflow-hidden"
       >
         {/* Titolo animato */}
         <div className="px-5 mb-8 overflow-hidden">
@@ -349,7 +349,7 @@ export function TestimonialBlock({ onBookClick }: { onBookClick: () => void }) {
     <div
       id="testimonial"
       ref={sectionRef}
-      className="relative bg-[#f4dbcc] overflow-hidden"
+      className="relative bg-white overflow-hidden"
       style={{ height: "100vh" }}
     >
       {/* Titolo animato */}

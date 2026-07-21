@@ -1,6 +1,7 @@
 {
   "requestDescription": "Richiesta da Landing",
   "course": ["art direction & copywriting"],
+  "is_orientamento": false,
   "origin": ["website", "landing", "openday"],
   "campuses": [
     {

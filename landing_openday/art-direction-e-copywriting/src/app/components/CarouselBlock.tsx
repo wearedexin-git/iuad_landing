@@ -65,7 +65,7 @@ export function CarouselBlock({ onBookClick }: { onBookClick: () => void }) {
   };
 
   return (
-    <section className="relative bg-[#f4dbcc] py-16 md:py-24 overflow-hidden">
+    <section className="relative bg-white py-16 md:py-24 overflow-hidden">
       <div className="px-5 md:px-10 lg:px-[calc(8.33%+35px)]">
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <h2 className="font-tiempos text-[32px] md:text-[48px] lg:text-[58px] text-[#d06321] leading-[1.1]">

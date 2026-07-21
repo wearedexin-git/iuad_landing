@@ -261,7 +261,7 @@ export function PlusBlock({ onBookClick }: { onBookClick: () => void }) {
   return (
     <div
       ref={sectionRef}
-      className="relative bg-white overflow-hidden"
+      className="relative bg-[#f4dbcc] overflow-hidden"
       style={{ height: "100vh" }}
     >
       {/* ── Fase 1: solo titolo ─────────────────────────────────────────── */}
