@@ -12,7 +12,18 @@
       "sessions": [
         {
           "id": "milano-1",
-          "apiDateTime": "2026-07-11 11:00"
+          "apiDateTime": "2026-09-08 16:00",
+          "label": "(inglese)"
+        },
+        
+        {
+          "id": "milano-2",
+          "apiDateTime": "2026-09-10 16:00",
+          "label": "(online)"
+        },
+        {
+          "id": "milano-3",
+          "apiDateTime": "2026-09-12 11:00"
         }
       ]
     },
@@ -24,7 +35,7 @@
       "sessions": [
         {
           "id": "napoli-1",
-          "apiDateTime": "2026-07-14 10:00"
+          "apiDateTime": "2026-09-08 10:00"
         }
       ]
     }

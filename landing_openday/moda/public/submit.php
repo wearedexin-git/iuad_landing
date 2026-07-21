@@ -40,27 +40,30 @@ function loadJsonConfig(string $path): array
     return is_array($decoded) ? $decoded : [];
 }
 
-function formatOpenDayDateLabel(string $openDayDate): string
+function formatOpenDayDateLabel(string $openDayDate, string $sessionLabel = ''): string
 {
     $date = DateTime::createFromFormat('Y-m-d H:i', $openDayDate);
     if ($date === false) {
-        return $openDayDate;
+        $formatted = $openDayDate;
+    } else {
+        $months = [
+            1 => 'gennaio', 2 => 'febbraio', 3 => 'marzo', 4 => 'aprile',
+            5 => 'maggio', 6 => 'giugno', 7 => 'luglio', 8 => 'agosto',
+            9 => 'settembre', 10 => 'ottobre', 11 => 'novembre', 12 => 'dicembre',
+        ];
+        $month = $months[(int) $date->format('n')] ?? '';
+
+        $formatted = sprintf(
+            '%d %s %s, ore %s',
+            (int) $date->format('j'),
+            $month,
+            $date->format('Y'),
+            $date->format('H:i')
+        );
     }
 
-    $months = [
-        1 => 'gennaio', 2 => 'febbraio', 3 => 'marzo', 4 => 'aprile',
-        5 => 'maggio', 6 => 'giugno', 7 => 'luglio', 8 => 'agosto',
-        9 => 'settembre', 10 => 'ottobre', 11 => 'novembre', 12 => 'dicembre',
-    ];
-    $month = $months[(int) $date->format('n')] ?? '';
-
-    return sprintf(
-        '%d %s %s, ore %s',
-        (int) $date->format('j'),
-        $month,
-        $date->format('Y'),
-        $date->format('H:i')
-    );
+    $suffix = trim($sessionLabel);
+    return $suffix !== '' ? $formatted . ' ' . $suffix : $formatted;
 }
 
 // ── Config landing condivisa frontend/backend ──────────────────────────────
@@ -80,6 +83,7 @@ $campuses = $landingConfig['campuses'] ?? [];
 
 $campusesByApiValue = [];
 $sessionsByCampusApiValue = [];
+$sessionMetaByCampusApiValue = [];
 foreach ($campuses as $campus) {
     $apiValue = trim((string) ($campus['apiValue'] ?? ''));
     if ($apiValue === '') {
@@ -88,10 +92,14 @@ foreach ($campuses as $campus) {
 
     $campusesByApiValue[$apiValue] = $campus;
     $sessionsByCampusApiValue[$apiValue] = [];
+    $sessionMetaByCampusApiValue[$apiValue] = [];
     foreach (($campus['sessions'] ?? []) as $session) {
         $apiDateTime = trim((string) ($session['apiDateTime'] ?? ''));
         if ($apiDateTime !== '') {
             $sessionsByCampusApiValue[$apiValue][] = $apiDateTime;
+            $sessionMetaByCampusApiValue[$apiValue][$apiDateTime] = [
+                'label' => trim((string) ($session['label'] ?? '')),
+            ];
         }
     }
 }
@@ -133,9 +141,12 @@ if (
 $selectedCampusConfig = $campusesByApiValue[$selectedLocation];
 $selectedCampusLabel = (string) ($selectedCampusConfig['label'] ?? $selectedLocation);
 $selectedCampusAddress = (string) ($selectedCampusConfig['address'] ?? '');
+$selectedSessionLabel = $isOrientamento
+    ? ''
+    : (string) ($sessionMetaByCampusApiValue[$selectedLocation][$selectedOpenDayDate]['label'] ?? '');
 $selectedOpenDayDateLabel = $isOrientamento
     ? 'Orientamento personalizzato'
-    : formatOpenDayDateLabel($selectedOpenDayDate);
+    : formatOpenDayDateLabel($selectedOpenDayDate, $selectedSessionLabel);
 $selectedCampusLabelEscaped = htmlspecialchars($selectedCampusLabel);
 $selectedCampusAddressEscaped = htmlspecialchars($selectedCampusAddress);
 $selectedOpenDayDateLabelEscaped = htmlspecialchars($selectedOpenDayDateLabel);

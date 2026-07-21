@@ -13,6 +13,11 @@
         {
           "id": "milano-1",
           "apiDateTime": "2026-05-16 11:00"
+        },
+        {
+          "id": "milano-2",
+          "apiDateTime": "2026-05-23 15:00",
+          "label": "(in inglese)"
         }
       ]
     },

@@ -66,6 +66,8 @@ type FormStatus = "idle" | "loading" | "error";
 type Session = {
   id: string;
   apiDateTime: string;
+  /** Testo opzionale stampato dopo la data, es. "(in inglese)". */
+  label?: string;
 };
 
 type Campus = {
@@ -128,6 +130,12 @@ function formatItalianDateTime(value: string) {
   })
     .format(parsed)
     .replace(/\s+alle\s+(?:ore\s+)?/i, ", ore ");
+}
+
+function formatSessionDateLabel(session: Session) {
+  const dateLabel = formatItalianDateTime(session.apiDateTime);
+  const suffix = (session.label ?? "").trim();
+  return suffix ? `${dateLabel} ${suffix}` : dateLabel;
 }
 
 function getCampusDisplayLocation(campus: Campus) {
@@ -372,7 +380,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                       </span>
                       <div className={HERO_BODY_COPY_CLASS}>
                         {(campus.sessions ?? []).map((session) => (
-                          <p key={session.id}>{formatItalianDateTime(session.apiDateTime)}</p>
+                          <p key={session.id}>{formatSessionDateLabel(session)}</p>
                         ))}
                       </div>
                     </div>
@@ -502,7 +510,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                         <option value="">Seleziona Giorno</option>
                         {availableSessions.map((session) => (
                           <option key={session.id} value={session.apiDateTime}>
-                            {formatItalianDateTime(session.apiDateTime)}
+                            {formatSessionDateLabel(session)}
                           </option>
                         ))}
                       </select>
@@ -555,7 +563,7 @@ export function HeroSection({ onBookClick: _onBookClick }: { onBookClick: () => 
                       <option value="">Seleziona Giorno</option>
                       {SINGLE_CAMPUS_SESSIONS.map((session) => (
                         <option key={session.id} value={session.apiDateTime}>
-                          {formatItalianDateTime(session.apiDateTime)}
+                          {formatSessionDateLabel(session)}
                         </option>
                       ))}
                     </select>
