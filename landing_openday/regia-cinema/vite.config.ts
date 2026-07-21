@@ -101,10 +101,10 @@ export default defineConfig(({ command }) => ({
         target: 'http://localhost:8888',
         changeOrigin: true,
       },
-      '/landing/design-comunicazione/submit.php': {
+      '/landing/regia-per-il-cinema-e-la-pubblicita/submit.php': {
         target: 'http://localhost:8888',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/landing\/design-comunicazione/, ''),
+        rewrite: (path) => path.replace(/^\/landing\/regia-per-il-cinema-e-la-pubblicita/, ''),
       },
     },
   },
