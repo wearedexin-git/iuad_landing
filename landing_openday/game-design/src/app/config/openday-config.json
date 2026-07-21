@@ -1,5 +1,6 @@
 {
   "requestDescription": "Richiesta da Landing",
+  "is_orientamento": false,
   "course": ["game design"],
   "origin": ["website", "landing", "openday"],
   "campuses": [
@@ -11,7 +12,7 @@
       "sessions": [
         {
           "id": "napoli-1",
-          "apiDateTime": "2026-07-15 10:00"
+          "apiDateTime": "2026-09-09 10:00"
         }
       ]
     }
@@ -21,7 +22,7 @@
       {
         "title": "Accademia IUAD Napoli",
         "phone": "+39 081 554 0383",
-        "email": "info@accademiamoda.it"
+        "email": "info@iuad.it"
       }
     ]
   }

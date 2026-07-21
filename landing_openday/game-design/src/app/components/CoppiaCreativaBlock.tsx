@@ -19,7 +19,7 @@ export function CoppiaCreativaBlock({ onBookClick }: { onBookClick: () => void }
             </div>
           </div>
           {/* SVG decorativa — in basso a sinistra sopra l'immagine, non ruotata */}
-          <div className="absolute bottom-[-40px] left-0 z-10">
+          <div className="absolute bottom-[-40px] md:bottom-[-100px] left-0 z-10">
             <EyeIcon variant="medium" className="w-[140px] h-[87px] md:w-[190px] md:h-[117px] xl:w-[237px] xl:h-[146px]" />
           </div>
         </div>

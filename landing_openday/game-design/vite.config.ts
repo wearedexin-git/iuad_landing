@@ -31,7 +31,7 @@ function copyOpendayConfig() {
 export default defineConfig(({ command }) => ({
   // In dev (`vite`) usa '/' per servire dalla root locale.
   // In build (`vite build`) usa il path di produzione sotto cui la landing è pubblicata.
-  base: command === 'build' ? '/landing/design-comunicazione/' : '/',
+  base: command === 'build' ? '/landing/game-design/' : '/',
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
@@ -101,10 +101,10 @@ export default defineConfig(({ command }) => ({
         target: 'http://localhost:8888',
         changeOrigin: true,
       },
-      '/landing/design-comunicazione/submit.php': {
+      '/landing/game-design/submit.php': {
         target: 'http://localhost:8888',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/landing\/design-comunicazione/, ''),
+        rewrite: (path) => path.replace(/^\/landing\/game-design/, ''),
       },
     },
   },
