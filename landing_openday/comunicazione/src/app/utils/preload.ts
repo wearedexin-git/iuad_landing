@@ -9,7 +9,7 @@ export function preloadThankYouPage() {
   if (isPreloaded || typeof window === 'undefined') return;
   
   const base = import.meta.env.BASE_URL;
-  const thankYouUrl = `${base}grazie.html`;
+  const thankYouUrl = `${base}grazie-per-aver-compilato-il-form.html`;
   
   // Crea un link preload
   const link = document.createElement('link');
@@ -39,11 +39,12 @@ export function trackFormEvent(eventName: string, params?: Record<string, unknow
       ...params,
     });
   }
-  
-  // Google Analytics 4
+
+  /* Google Ads gtag (disattivato: AW-1001604186)
   if (typeof window.gtag === 'function') {
     window.gtag('event', eventName, params);
   }
+  */
 }
 
 // Type declarations per gli analytics

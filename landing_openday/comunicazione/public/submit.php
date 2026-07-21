@@ -40,27 +40,30 @@ function loadJsonConfig(string $path): array
     return is_array($decoded) ? $decoded : [];
 }
 
-function formatOpenDayDateLabel(string $openDayDate): string
+function formatOpenDayDateLabel(string $openDayDate, string $sessionLabel = ''): string
 {
     $date = DateTime::createFromFormat('Y-m-d H:i', $openDayDate);
     if ($date === false) {
-        return $openDayDate;
+        $base = $openDayDate;
+    } else {
+        $months = [
+            1 => 'gennaio', 2 => 'febbraio', 3 => 'marzo', 4 => 'aprile',
+            5 => 'maggio', 6 => 'giugno', 7 => 'luglio', 8 => 'agosto',
+            9 => 'settembre', 10 => 'ottobre', 11 => 'novembre', 12 => 'dicembre',
+        ];
+        $month = $months[(int) $date->format('n')] ?? '';
+
+        $base = sprintf(
+            '%d %s %s, ore %s',
+            (int) $date->format('j'),
+            $month,
+            $date->format('Y'),
+            $date->format('H:i')
+        );
     }
 
-    $months = [
-        1 => 'gennaio', 2 => 'febbraio', 3 => 'marzo', 4 => 'aprile',
-        5 => 'maggio', 6 => 'giugno', 7 => 'luglio', 8 => 'agosto',
-        9 => 'settembre', 10 => 'ottobre', 11 => 'novembre', 12 => 'dicembre',
-    ];
-    $month = $months[(int) $date->format('n')] ?? '';
-
-    return sprintf(
-        '%d %s %s, ore %s',
-        (int) $date->format('j'),
-        $month,
-        $date->format('Y'),
-        $date->format('H:i')
-    );
+    $extra = trim($sessionLabel);
+    return $extra !== '' ? $base . ' (' . $extra . ')' : $base;
 }
 
 // ── Config landing condivisa frontend/backend ──────────────────────────────
@@ -75,9 +78,19 @@ $landingConfigPath = file_exists($landingConfigPathProd)
     : $landingConfigPathDev;
 $landingConfig = loadJsonConfig($landingConfigPath);
 $campuses = $landingConfig['campuses'] ?? [];
+$isOrientamento = !empty($landingConfig['is_orientamento']);
+
+$origin = $landingConfig['origin'] ?? ['website', 'landing', 'openday'];
+if ($isOrientamento) {
+    $origin = array_map(
+        static fn ($value) => $value === 'openday' ? 'orientamento' : $value,
+        $origin
+    );
+}
 
 $campusesByApiValue = [];
 $sessionsByCampusApiValue = [];
+$sessionLabelsByCampusApiValue = [];
 foreach ($campuses as $campus) {
     $apiValue = trim((string) ($campus['apiValue'] ?? ''));
     if ($apiValue === '') {
@@ -86,16 +99,21 @@ foreach ($campuses as $campus) {
 
     $campusesByApiValue[$apiValue] = $campus;
     $sessionsByCampusApiValue[$apiValue] = [];
+    $sessionLabelsByCampusApiValue[$apiValue] = [];
     foreach (($campus['sessions'] ?? []) as $session) {
         $apiDateTime = trim((string) ($session['apiDateTime'] ?? ''));
         if ($apiDateTime !== '') {
             $sessionsByCampusApiValue[$apiValue][] = $apiDateTime;
+            $sessionLabelsByCampusApiValue[$apiValue][$apiDateTime] = trim((string) ($session['label'] ?? ''));
         }
     }
 }
 
 // ── Validazione campi obbligatori ──────────────────────────────────────────
-$required = ['first_name', 'last_name', 'email', 'phone_number', 'how_you_knows', 'location', 'open_day_date'];
+$required = ['first_name', 'last_name', 'email', 'phone_number', 'how_you_knows', 'location'];
+if (!$isOrientamento) {
+    $required[] = 'open_day_date';
+}
 foreach ($required as $field) {
     if (empty($input[$field])) {
         ob_end_clean();
@@ -106,7 +124,7 @@ foreach ($required as $field) {
 }
 
 $selectedLocation = trim((string) $input['location']);
-$selectedOpenDayDate = trim((string) $input['open_day_date']);
+$selectedOpenDayDate = trim((string) ($input['open_day_date'] ?? ''));
 
 if (!isset($campusesByApiValue[$selectedLocation])) {
     ob_end_clean();
@@ -115,17 +133,22 @@ if (!isset($campusesByApiValue[$selectedLocation])) {
     exit();
 }
 
-if (!in_array($selectedOpenDayDate, $sessionsByCampusApiValue[$selectedLocation], true)) {
-    ob_end_clean();
-    http_response_code(422);
-    echo json_encode(['success' => false, 'message' => 'Data Open Day non valida per la sede selezionata.']);
-    exit();
+if (!$isOrientamento) {
+    if (!in_array($selectedOpenDayDate, $sessionsByCampusApiValue[$selectedLocation], true)) {
+        ob_end_clean();
+        http_response_code(422);
+        echo json_encode(['success' => false, 'message' => 'Data Open Day non valida per la sede selezionata.']);
+        exit();
+    }
 }
 
 $selectedCampusConfig = $campusesByApiValue[$selectedLocation];
 $selectedCampusLabel = (string) ($selectedCampusConfig['label'] ?? $selectedLocation);
 $selectedCampusAddress = (string) ($selectedCampusConfig['address'] ?? '');
-$selectedOpenDayDateLabel = formatOpenDayDateLabel($selectedOpenDayDate);
+$selectedSessionLabel = $sessionLabelsByCampusApiValue[$selectedLocation][$selectedOpenDayDate] ?? '';
+$selectedOpenDayDateLabel = $isOrientamento
+    ? ''
+    : formatOpenDayDateLabel($selectedOpenDayDate, $selectedSessionLabel);
 $selectedCampusLabelEscaped = htmlspecialchars($selectedCampusLabel);
 $selectedCampusAddressEscaped = htmlspecialchars($selectedCampusAddress);
 $selectedOpenDayDateLabelEscaped = htmlspecialchars($selectedOpenDayDateLabel);
@@ -140,10 +163,13 @@ $data = [
     'phone_number'        => trim($input['phone_number']),
     'lang'                => 'it',
     'course'              => $landingConfig['course'] ?? ['corso triennale di i livello in design della comunicazione'],
-    'origin'              => $landingConfig['origin'] ?? ['website', 'landing', 'openday'],
+    'origin'              => $origin,
     'how_you_knows'       => (int) $input['how_you_knows'],
-    'open_day_date'       => $selectedOpenDayDate,
 ];
+
+if (!$isOrientamento) {
+    $data['open_day_date'] = $selectedOpenDayDate;
+}
 
 // ── Caricamento configurazione da .env ─────────────────────────────────────
 function loadEnv(string $path): array
@@ -287,7 +313,19 @@ if (is_readable($logoPath)) {
 }
 
 // ── Email 1: Conferma all'utente ───────────────────────────────────────────
-$userSubject = 'Iscrizione confermata – Open Day Design della Comunicazione | IUAD';
+$requestTypeLabel = $isOrientamento ? 'Orientamento' : 'Open Day';
+$userOpenDayDateRow = $isOrientamento ? '' : "
+                    <tr>
+                      <td style='padding-bottom:10px;font-family:Arial,sans-serif;font-size:14px;'>
+                        <strong style='color:#d06321;'>Data Open Day:</strong>
+                        <span style='color:#201f1f;'> $selectedOpenDayDateLabelEscaped</span>
+                      </td>
+                    </tr>";
+$academyOpenDayDateLine = $isOrientamento ? '' : "<p style='margin:0 0 8px;'><strong>Data Open Day:</strong> $selectedOpenDayDateLabelEscaped</p>";
+
+$userSubject = $isOrientamento
+    ? 'Prenotazione confermata – Orientamento Design della Comunicazione | IUAD'
+    : 'Iscrizione confermata – Open Day Design della Comunicazione | IUAD';
 $userBody = "
 <!DOCTYPE html>
 <html lang='it'>
@@ -340,7 +378,7 @@ $userBody = "
                     <tr>
                       <td style='padding-bottom:10px;font-family:Arial,sans-serif;font-size:14px;'>
                         <strong style='color:#d06321;'>Tipo Richiesta:</strong>
-                        <span style='color:#201f1f;'> Open Day</span>
+                        <span style='color:#201f1f;'> $requestTypeLabel</span>
                       </td>
                     </tr>
                     <tr>
@@ -349,12 +387,7 @@ $userBody = "
                         <span style='color:#201f1f;'> $selectedCampusLabelEscaped</span>
                       </td>
                     </tr>
-                    <tr>
-                      <td style='padding-bottom:10px;font-family:Arial,sans-serif;font-size:14px;'>
-                        <strong style='color:#d06321;'>Data Open Day:</strong>
-                        <span style='color:#201f1f;'> $selectedOpenDayDateLabelEscaped</span>
-                      </td>
-                    </tr>
+                    $userOpenDayDateRow
                     <tr>
                       <td style='padding-bottom:10px;font-family:Arial,sans-serif;font-size:14px;'>
                         <strong style='color:#d06321;'>Indirizzo sede:</strong>
@@ -387,7 +420,10 @@ if (!$userMailSent) {
 }
 
 // ── Email 2: Notifica interna all'accademia ────────────────────────────────
-$academySubject = 'Nuova iscrizione Open Day – Design della Comunicazione';
+$academySubject = $isOrientamento
+    ? 'Nuova prenotazione Orientamento – Design della Comunicazione'
+    : 'Nuova iscrizione Open Day – Design della Comunicazione';
+$academyTitle = $isOrientamento ? 'Nuova Prenotazione Orientamento' : 'Nuova Iscrizione Open Day';
 $academyBody = "
 <!DOCTYPE html>
 <html lang='it'>
@@ -405,7 +441,7 @@ $academyBody = "
               alt='IUAD Accademia di Moda e Design' width='80'
               style='display:block;margin:0 auto 20px;max-width:80px;'>
             <h1 style='margin:0;font-size:22px;font-weight:bold;color:#201f1f;font-family:Georgia,serif;'>
-              Nuova Iscrizione Open Day
+              $academyTitle
             </h1>
           </td>
         </tr>
@@ -442,9 +478,9 @@ $academyBody = "
               </tr>
               <tr>
                 <td style='padding-top:16px;font-size:14px;color:#201f1f;font-family:Arial,sans-serif;line-height:1.5;'>
-                  <p style='margin:0 0 8px;'><strong>Tipo Richiesta:</strong> Open Day</p>
+                  <p style='margin:0 0 8px;'><strong>Tipo Richiesta:</strong> $requestTypeLabel</p>
                   <p style='margin:0 0 8px;'><strong>Sede:</strong> $selectedCampusLabelEscaped</p>
-                  <p style='margin:0 0 8px;'><strong>Data Open Day:</strong> $selectedOpenDayDateLabelEscaped</p>
+                  $academyOpenDayDateLine
                   <p style='margin:0 0 8px;'><strong>Indirizzo sede:</strong> $selectedCampusAddressEscaped</p>
                   <p style='margin:0 0 8px;'><strong>Corso:</strong> Design della Comunicazione</p>
                   <p style='margin:0;'><strong>Come ci hai conosciuto:</strong> $howYouKnowsLabel</p>
@@ -477,10 +513,11 @@ if (!$academyMailSent) {
 
 // ── Risposta al frontend ───────────────────────────────────────────────────
 ob_end_clean();
-$redirectQuery = http_build_query([
-    'sede' => $selectedCampusLabel,
-    'data' => $selectedOpenDayDateLabel,
-]);
+$redirectQueryParams = ['sede' => $selectedCampusLabel];
+if (!$isOrientamento) {
+    $redirectQueryParams['data'] = $selectedOpenDayDateLabel;
+}
+$redirectQuery = http_build_query($redirectQueryParams);
 
 echo json_encode([
     'success'       => true,
@@ -490,5 +527,5 @@ echo json_encode([
         'user_sent' => $userMailSent,
         'academy_sent' => $academyMailSent,
     ],
-    'redirect'      => 'grazie.html?' . $redirectQuery,
+    'redirect'      => 'grazie-per-aver-compilato-il-form.html?' . $redirectQuery,
 ]);
